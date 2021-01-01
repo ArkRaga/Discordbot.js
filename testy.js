@@ -1,11 +1,25 @@
+const fetch = require("node-fetch");
+const tesJson = require("./test.json");
 let arr = ["this", "that", "then", "fizz", "buzz"];
 
-let target = "fizz";
+let target = [];
 
-for (let i in arr) {
-  if (arr[i] === target) {
-    arr.splice(i, 1);
-  }
-}
+let url = encodeURI("the Devil is a part-timer");
 
-console.log(1234 == "1234");
+console.log("Url", tesJson.data[0].attributes.canonicalTitle);
+
+// fetch("./test.json")
+//   .then((response) => response.json())
+//   .then((data) => console.log(data));
+
+// async func(args){
+
+//   await get - anime api {args}
+//   let  =anime = res
+
+//   em.title = anime.title
+//   em.des  = anime.des
+//   linkto= anime.link
+//   return em
+
+// }

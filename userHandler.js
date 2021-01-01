@@ -4,7 +4,7 @@ const handleUsers = (e) => {
   let user = users[e.id];
   // console.log(e);
   if (user === undefined) {
-    users[e.id] = { id: e.id, username: e.name, points: 50 };
+    users[e.id] = { id: e.id, username: e.username, points: 50 };
   }
 };
 
