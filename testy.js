@@ -1,12 +1,12 @@
-const fetch = require("node-fetch");
-const tesJson = require("./test.json");
-let arr = ["this", "that", "then", "fizz", "buzz"];
+// const fetch = require("node-fetch");
+// const tesJson = require("./test.json");
+// let arr = ["this", "that", "then", "fizz", "buzz"];
 
-let target = [];
+// let target = [];
 
-let url = encodeURI("the Devil is a part-timer");
+// let url = encodeURI("the Devil is a part-timer");
 
-console.log("Url", tesJson.data[0].attributes.canonicalTitle);
+// console.log("Url", tesJson.data[0].attributes.canonicalTitle);
 
 // fetch("./test.json")
 //   .then((response) => response.json())
@@ -23,3 +23,18 @@ console.log("Url", tesJson.data[0].attributes.canonicalTitle);
 //   return em
 
 // }
+
+let testJSON = [
+  {
+    name: "John",
+    age: 21,
+    language: ["JavaScript", "PHP", "Python"],
+  },
+  {
+    name: "Smith",
+    age: 25,
+    language: ["PHP", "Go", "JavaScript"],
+  },
+];
+
+console.log(testJSON.find((x) => x.name === "John"));

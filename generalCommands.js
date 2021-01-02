@@ -1,29 +1,48 @@
 // const Discord = require("discord.js");
 
-const pong = (args) => {
-  return `get fucked @${args[0]}`;
+// const { Message } = require("discord.js");
+
+const pong = async (args, message) => {
+  await message.channel.send(`get fucked @${args[0]}`);
 };
 
-const punch = (args) => {
-  return `outright punches ${args[0]}, that wasnt very nice!`;
+const punch = async (args, message) => {
+  await message.channel.send(
+    `outright punches ${args[0]}, that wasnt very nice!`
+  );
 };
 
-const hug = (args) => {
-  return `Gives a big hug to @${args[0]}`;
+const hug = async (args, message) => {
+  await message.channel.send(`Gives a big hug to @${args[0]}`);
 };
 
-const printUsers = () => {
+const printUsers = async (message) => {
   const printusers = require("./userHandler").printUsers;
   printusers();
-  return "you got it boss";
+  await message.channel.send("you got it boss");
 };
 
-const embed = (args) => {
+const edittopic = async (args, message) => {
+  let s = "";
+  args.map((x) => (s += `${x} `));
+  await message.channel.edit({ topic: s });
+  await message.channel.send("It has been done");
+};
+
+const embed = async (args, message) => {
   let em = exampleEmbed;
+  let arr = ["0️⃣", "2️⃣", "1️⃣"];
   em.title = "";
   args.map((x) => (em.title += ` ${x}`));
   em.description = "go fuck";
-  return { embed: em };
+  const msg = await message.channel.send({ embed: em });
+  await arr.forEach((x) => msg.react(x));
+};
+
+const playchess = async (args, message) => {
+  await message.channel.send(
+    `${args[0]}, ${message.author.username} has challenged you to a game of Chess!`
+  );
 };
 
 const dic = {
@@ -32,15 +51,17 @@ const dic = {
   hug: hug,
   printusers: printUsers,
   embed: embed,
+  playchess: playchess,
+  edittopic: edittopic,
 };
 
-const commandHandler = (command, args) => {
+const commandHandler = async (command, args, message) => {
   for (i in dic) {
     if (command === i) {
-      return dic[i](args);
+      return await dic[i](args, message);
     }
   }
-  return "Not a valid Command please try again";
+  await message.channel.send("Not a valid Command please try again");
 };
 
 exports.commandHandler = commandHandler;

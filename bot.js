@@ -16,7 +16,14 @@ client.on("message", (message) => {
   if (!message.content.startsWith(prefix) || message.author.bot) return;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
-  message.channel.send(commandHandler(command, args));
+  commandHandler(command, args, message);
+});
+
+client.on("messageReactionAdd", async (reaction, user) => {
+  if (user.bot) {
+    return;
+  }
+  console.log(`Reac: ${reaction.count}. User: ${user.username}`);
 });
 
 client.login(process.env.OAUTH);
