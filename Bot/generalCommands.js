@@ -60,6 +60,13 @@ const playchess = async (args, message) => {
 };
 
 const sayhi = async (args, message) => {
+  let id = message.author.id;
+  let y = message.guild.members.cache;
+  console.log(
+    "author: ",
+    message.guild.members.cache.find((user) => user.id === message.author.id)
+      .user.username
+  );
   await message.channel.send("Hiya");
 };
 

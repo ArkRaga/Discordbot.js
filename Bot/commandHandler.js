@@ -1,7 +1,9 @@
 const genCommands = require("./generalCommands");
+const combatCommands = require("./Combat/combatCommands");
 
 const commands = {
   ...genCommands,
+  ...combatCommands,
 };
 
 const commandHandler = async (command, args, message) => {
