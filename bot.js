@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const prefix = "!";
 
-const commandHandler = require("./Bot/commandHandler").commandHandler;
+const commandHandler = require("./Bot/commandHandler");
 const handleUsers = require("./Bot/userHandler").handleUsers;
 
 client.once("ready", () => {

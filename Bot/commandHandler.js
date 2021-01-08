@@ -1,4 +1,4 @@
-const genCommands = require("./generalCommands").dic;
+const genCommands = require("./generalCommands");
 
 const commands = {
   ...genCommands,
@@ -13,4 +13,4 @@ const commandHandler = async (command, args, message) => {
   }
   await message.channel.send("Not a valid Command please try again");
 };
-exports.commandHandler = commandHandler;
+module.exports = commandHandler;

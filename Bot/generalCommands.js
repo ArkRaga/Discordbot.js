@@ -75,4 +75,4 @@ const dic = {
   sayhi,
 };
 
-exports.dic = dic;
+module.exports = dic;
