@@ -4,8 +4,8 @@ require("dotenv").config();
 
 const prefix = "!";
 
-const commandHandler = require("./generalCommands").commandHandler;
-const handleUsers = require("./userHandler").handleUsers;
+const commandHandler = require("./Bot/commandHandler").commandHandler;
+const handleUsers = require("./Bot/userHandler").handleUsers;
 
 client.once("ready", () => {
   console.log("Ready!");
@@ -16,6 +16,7 @@ client.on("message", (message) => {
   if (!message.content.startsWith(prefix) || message.author.bot) return;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
+  // console.log(message.author.username);
   commandHandler(command, args, message);
 });
 

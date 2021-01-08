@@ -24,17 +24,28 @@
 
 // }
 
-let testJSON = [
-  {
-    name: "John",
-    age: 21,
-    language: ["JavaScript", "PHP", "Python"],
-  },
-  {
-    name: "Smith",
-    age: 25,
-    language: ["PHP", "Go", "JavaScript"],
-  },
-];
+const dic1 = {
+  a: "a",
+  b: "b",
+  c: "c",
+};
 
-console.log(testJSON.find((x) => x.name === "John"));
+const dic2 = {
+  d: "d",
+  e: "e",
+  f: "f",
+};
+
+const dic3 = {
+  h: "h",
+  i: "i",
+  j: "j",
+};
+
+const gen = require("./Bot/generalCommands").dic;
+const allDic = {
+  ...dic1,
+  ...gen,
+};
+
+console.log(allDic);
