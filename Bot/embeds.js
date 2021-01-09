@@ -1,3 +1,5 @@
+const commands = require("./Combat/combatCommands");
+
 const userEmbed = {
   color: 457774,
   fields: [
@@ -17,6 +19,12 @@ const userEmbed = {
       inline: false,
     },
   ],
+};
+
+const combatEmbed = {
+  color: 0x0099ff,
+  title: "Some title",
+  description: "Some description here",
 };
 
 const exampleEmbed = {
@@ -53,3 +61,4 @@ const exampleEmbed = {
 
 exports.exampleEmbed = exampleEmbed;
 exports.userEmbed = userEmbed;
+exports.combatEmbed = combatEmbed;

@@ -45,12 +45,30 @@ const edittopic = async (args, message) => {
 
 const embed = async (args, message) => {
   let em = require("./embeds").exampleEmbed;
-  let arr = ["0️⃣", "2️⃣", "1️⃣"];
+  let arr = ["🗡️", "🛡️", "🏃"];
   em.title = "";
   args.map((x) => (em.title += ` ${x}`));
   em.description = "go fuck";
   const msg = await message.channel.send({ embed: em });
   await arr.forEach((x) => msg.react(x));
+
+  const filter = (reaction, user) => {
+    return arr.includes(reaction.emoji.name) && user.id == message.author.id;
+  };
+  msg
+    .awaitReactions(filter, { max: 1, time: 60000, errors: ["time"] })
+    .then((collected) => {
+      const reaction = collected.first();
+
+      if (reaction.emoji.name === "🗡️") {
+        message.reply("yo");
+      } else {
+        message.reply("ohhh");
+      }
+    })
+    .catch((collected) => {
+      message.reply("you reacted with neither a thumbs up, nor a thumbs down.");
+    });
 };
 
 const playchess = async (args, message) => {
@@ -60,14 +78,9 @@ const playchess = async (args, message) => {
 };
 
 const sayhi = async (args, message) => {
-  let id = message.author.id;
-  let y = message.guild.members.cache;
-  console.log(
-    "author: ",
-    message.guild.members.cache.find((user) => user.id === message.author.id)
-      .user.username
-  );
-  await message.channel.send("Hiya");
+  let num = message.author.id;
+  // console.log("Here: ", message.guild.members.cache.get(id).user.username);
+  await message.channel.send(`<@!${num}>`);
 };
 
 const dic = {

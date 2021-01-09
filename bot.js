@@ -6,14 +6,17 @@ const prefix = "!";
 
 const commandHandler = require("./Bot/commandHandler");
 const handleUsers = require("./Bot/userHandler").handleUsers;
+const reactionhandler = require("./Bot/Reactions/reactionHandler");
 
 client.once("ready", () => {
   console.log("Ready!");
 });
 
 client.on("message", (message) => {
+  // console.log(message);
   handleUsers(message.author);
   if (!message.content.startsWith(prefix) || message.author.bot) return;
+  // if (!message.content.startsWith(prefix)) return;
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const command = args.shift().toLowerCase();
   // console.log(message.author.username);
@@ -24,7 +27,8 @@ client.on("messageReactionAdd", async (reaction, user) => {
   if (user.bot) {
     return;
   }
-  console.log(`Reac: ${reaction.count}. User: ${user.username}`);
+  // console.log(`Reac: ${reaction.emoji}. User: ${user.username}`);
+  // reactionhandler(reaction, user);
 });
 
 client.login(process.env.OAUTH);
