@@ -27,6 +27,23 @@ const combatEmbed = {
   description: "Some description here",
 };
 
+const combat2Embed = {
+  title: "Failed ",
+  color: 16187396,
+  fields: [
+    {
+      name: "Failed ",
+      value: "Failed",
+      inline: false,
+    },
+
+    {
+      name: "Player2 its your turn",
+      value: "**🗡️** to attack or 🛡️ to Defend",
+    },
+  ],
+};
+
 const exampleEmbed = {
   color: 0x0099ff,
   title: "Some title",
@@ -62,3 +79,4 @@ const exampleEmbed = {
 exports.exampleEmbed = exampleEmbed;
 exports.userEmbed = userEmbed;
 exports.combatEmbed = combatEmbed;
+exports.combat2Embed = combat2Embed;

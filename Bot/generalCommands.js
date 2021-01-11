@@ -53,6 +53,7 @@ const embed = async (args, message) => {
   await arr.forEach((x) => msg.react(x));
 
   const filter = (reaction, user) => {
+    console.log("user: ", user);
     return arr.includes(reaction.emoji.name) && user.id == message.author.id;
   };
   msg
@@ -62,6 +63,8 @@ const embed = async (args, message) => {
 
       if (reaction.emoji.name === "🗡️") {
         message.reply("yo");
+        reaction.message.delete();
+        // console.log("user: ", user);
       } else {
         message.reply("ohhh");
       }
