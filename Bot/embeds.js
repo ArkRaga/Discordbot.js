@@ -21,10 +21,51 @@ const userEmbed = {
   ],
 };
 
+const classEmbed = {
+  title: "Some title",
+  color: 457774,
+  fields: [
+    {
+      name: " Strength ",
+      value: "",
+      inline: false,
+    },
+    {
+      name: " Defense: ",
+      value: "",
+      inline: false,
+    },
+    {
+      name: " Speed: ",
+      value: "",
+      inline: false,
+    },
+  ],
+};
+
 const combatEmbed = {
   color: 0x0099ff,
   title: "Some title",
   description: "Some description here",
+};
+
+const user2Embed = {
+  thumbnail: {
+    url: "https://cdn.discordapp.com/embed/avatars/0.png",
+  },
+  author: {
+    name: "Arkraga",
+  },
+  fields: [
+    {
+      name: "Class: ",
+      value: "Starter",
+    },
+    {
+      name: "Battle Points: ",
+      value: "500",
+    },
+  ],
 };
 
 const combat2Embed = {
@@ -78,5 +119,7 @@ const exampleEmbed = {
 
 exports.exampleEmbed = exampleEmbed;
 exports.userEmbed = userEmbed;
+exports.classEmbed = classEmbed;
+exports.user2Embed = user2Embed;
 exports.combatEmbed = combatEmbed;
 exports.combat2Embed = combat2Embed;

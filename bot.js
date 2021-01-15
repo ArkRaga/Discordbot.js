@@ -6,7 +6,7 @@ const prefix = "!";
 
 const commandHandler = require("./Bot/commandHandler");
 const handleUsers = require("./Bot/userHandler").handleUsers;
-const reactionhandler = require("./Bot/Reactions/reactionHandler");
+// const reactionhandler = require("./Bot/Reactions/reactionHandler");
 
 client.once("ready", () => {
   console.log("Ready!");

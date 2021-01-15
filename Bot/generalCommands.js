@@ -21,6 +21,16 @@ const printusers = async (args, message) => {
   await message.channel.send("you got it boss");
 };
 
+const printclasses = async (args, message) => {
+  // console.log("msg: ", message);
+  var rpgClasses = require("./Rpg/rpgClasses");
+  var c = "";
+  for (i in rpgClasses) {
+    c += `${rpgClasses[i]},  `;
+  }
+  await message.channel.send(c);
+};
+
 const printuser = async (args, message) => {
   // console.log("AID: ", users);
   let user = users.filter((x) => x.discordid == message.author.id);
@@ -44,34 +54,38 @@ const edittopic = async (args, message) => {
 };
 
 const embed = async (args, message) => {
-  let em = require("./embeds").exampleEmbed;
+  let em = require("./embeds").user2Embed;
+  console.log(message.author.avatarURL());
+  // console.log(em);
   let arr = ["🗡️", "🛡️", "🏃"];
-  em.title = "";
-  args.map((x) => (em.title += ` ${x}`));
-  em.description = "go fuck";
+  em.thumbnail.url = message.author.avatarURL();
+  em.author.name = message.author.username;
+  em.fields[0].value = "Starter";
+  em.fields[1].value = 1600;
   const msg = await message.channel.send({ embed: em });
-  await arr.forEach((x) => msg.react(x));
+  // args.map((x) => (em.title += ` ${x}`));
+  // await arr.forEach((x) => msg.react(x));
 
-  const filter = (reaction, user) => {
-    console.log("user: ", user);
-    return arr.includes(reaction.emoji.name) && user.id == message.author.id;
-  };
-  msg
-    .awaitReactions(filter, { max: 1, time: 60000, errors: ["time"] })
-    .then((collected) => {
-      const reaction = collected.first();
+  // const filter = (reaction, user) => {
+  //   console.log("user: ", user);
+  //   return arr.includes(reaction.emoji.name) && user.id == message.author.id;
+  // };
+  // msg
+  //   .awaitReactions(filter, { max: 1, time: 60000, errors: ["time"] })
+  //   .then((collected) => {
+  //     const reaction = collected.first();
 
-      if (reaction.emoji.name === "🗡️") {
-        message.reply("yo");
-        reaction.message.delete();
-        // console.log("user: ", user);
-      } else {
-        message.reply("ohhh");
-      }
-    })
-    .catch((collected) => {
-      message.reply("you reacted with neither a thumbs up, nor a thumbs down.");
-    });
+  //     if (reaction.emoji.name === "🗡️") {
+  //       message.reply("yo");
+  //       reaction.message.delete();
+  //       // console.log("user: ", user);
+  //     } else {
+  //       message.reply("ohhh");
+  //     }
+  //   })
+  //   .catch((collected) => {
+  //     message.reply("you reacted with neither a thumbs up, nor a thumbs down.");
+  //   });
 };
 
 const playchess = async (args, message) => {
@@ -96,6 +110,7 @@ const dic = {
   edittopic,
   printuser,
   sayhi,
+  printclasses,
 };
 
 module.exports = dic;
