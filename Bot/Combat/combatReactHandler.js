@@ -1,4 +1,5 @@
 var users = require("../userHandler").users;
+var monsters = require("../Rpg/monsters");
 
 let combats = [];
 
@@ -55,6 +56,7 @@ const startcombat = async (args, message) => {
     await message.channel.send(
       "You dare challenge me?! I Accept your foolish request!"
     );
+    combat[0].lastaction = "accept";
     return doBotCombat(combat[0], message);
   }
 
@@ -87,6 +89,47 @@ const startcombat = async (args, message) => {
     });
 };
 
+const hunt = async (args, message) => {
+  var en = monsters.wolf;
+
+  if (combats.length != 0) {
+    let combat = combats.filter((x) => x.player1 == id || x.player2 == id);
+    let combat2 = combats.filter(
+      (x) => x.player1 == en.user.id || x.player2 == en.user.id
+    );
+    // console.log("combat: ", combat);
+    // console.log("combat2: ", combat2);
+    if (combat.length != 0 || combat2.length != 0) {
+      return await message.channel.send(
+        "Combat cannot be started while  currently in combat"
+      );
+    }
+  }
+
+  combats.push({
+    monster: true,
+    player1dmg: 0,
+    player2dmg: 0,
+    heal: 0,
+    lastaction: "accept",
+    turn: 1,
+    player1: message.author.id,
+    player1name: message.author.username,
+    player1hp: 10,
+    player2: en.name,
+    player2name: en.name,
+    player2hp: 10,
+    state: combatState[0],
+  });
+  let combat = combats.filter(
+    (x) => x.player1 == message.author.id || x.player2 == message.author.id
+  );
+  await message.channel.send(
+    `<@!${message.author.id}> your fighting a **${en.name}** `
+  );
+  return await doBotCombat(combat[0], message);
+};
+
 const accept = async (args, message, p2id) => {
   const combat = combats.filter((x) => x.player2 == p2id);
   let em = require("../embeds").combatEmbed;
@@ -94,7 +137,7 @@ const accept = async (args, message, p2id) => {
   em.description = `<@!${combat[0].player1}>, <@!${combat[0].player2}> Has accepted your challenge`;
   const msg = await message.channel.send({ embed: em });
   combat[0].lastaction = "accept";
-  embedHandler(combat[0], message);
+  pvpCombat(combat[0], message);
 };
 
 const deny = async (args, message, p2id) => {
@@ -108,26 +151,39 @@ const doHealthCheck = async (combat, message) => {
   if (combat.player1hp <= 0 || combat.player2hp <= 0) {
     var winner = combat.player1hp <= 0 ? "player2" : "player1";
     combats = combats.filter((x) => x.player2 != combat.player2);
-    doWin(combat, message, winner);
-    return;
+    let em = require("../embeds").combatEmbed;
+    em.title = " Final Turn";
+    em.description = ` **${combat[winner + "name"]}** delt a final blow of ** ${
+      combat[winner + "dmg"]
+    }** dmg `;
+    await message.channel.send({ embed: em });
+    return await doWin(combat, message, winner);
   }
-  if (combat.player2 == "792163801072009236") {
+
+  if (combat.player2 == "792163801072009236" || combat.monster) {
     return await doBotCombat(combat, message);
   }
   combat.state =
     combat.state === combatState[0] ? combatState[1] : combatState[0];
-  await embedHandler(combat, message);
+  await pvpCombat(combat, message);
 };
 
 const doWin = async (combat, message, winner) => {
   var en = winner == "player1" ? "player2" : "player1";
+
   let em = require("../embeds").combatEmbed;
   em.title = "It was a Battle for the Gods!";
   em.description = `Ultimately <@!${combat[winner]}>, came out with the win aginst their powerful foe <@!${combat[en]}>! the fight was a must see folks! `;
-  const msg = await message.channel.send({ embed: em });
+  await message.channel.send({ embed: em });
   let fighters = users.filter(
     (x) => x.discordid == combat.player1 || x.discordid == combat.player2
   );
+  console.log("Fighters: ", fighters);
+  console.log("Combat: ", combat);
+  if (combat.monster) {
+    console.log("Ding");
+    return;
+  }
   if (fighters[0].discordid == combat.winner) {
     fighters[0].battlepoints += 3;
     fighters[1].battlepoints += 1;
@@ -167,7 +223,7 @@ const createEmbed = (combat, target, en) => {
   return em;
 };
 
-const embedHandler = async (combat, message) => {
+const pvpCombat = async (combat, message) => {
   // console.log("Embed Combat: ");
   var target = combat.state == combatState[1] ? "player2" : "player1";
   var en = target == "player1" ? "player2" : "player1";
@@ -208,21 +264,35 @@ const embedHandler = async (combat, message) => {
     });
 };
 
-const botEmbedHandler = (combat, botdmg) => {
+const botEmbedHandler = (combat) => {
   // console.log("botembed");
   let em = require("../embeds").combat2Embed;
+  let en = combat.monster ? combat.player2name : `<@!${combat.player2}>`;
+  var enatk = "";
   em.title = `Turn ${combat.turn}`;
-  em.fields[0].name = `${combat.player1name} Hp: ${combat.player1hp} || ${combat.player2name}Hp: ${combat.player2hp}`;
+  em.fields[0].name = `${combat.player1name} Hp: ${combat.player1hp} || ${combat.player2name} Hp: ${combat.player2hp}`;
+
+  if (combat.player2dmg === 0) {
+    enatk = `${en} Has missed`;
+  } else {
+    enatk = `${en} Has attacked for **${combat.player2dmg} dmg **`;
+  }
+
   if (combat.lastaction === "attack") {
     // console.log("attack action if");
-    em.fields[0].value = `<@!${combat.player1}> has attacked <@!${combat.player2}> for **${combat.dmg} dmg **. <@!${combat.player2}> Has attacked for **${botdmg} dmg **`;
+    em.fields[0].value = `<@!${combat.player1}> has attacked ${en} for **${combat.player1dmg} dmg **. ${enatk}`;
   }
   if (combat.lastaction === "heal") {
-    em.fields[0].value = `<@!${combat.player1}> has healed for ${combat.heal}, <@!${combat.player2}> Has attacked for ${botdmg}`;
+    em.fields[0].value = `<@!${combat.player1}> has healed for ${combat.heal}, ${enatk}`;
   }
   if (combat.lastaction === "accept") {
-    em.fields[0].value = `
-    LETS FIGHT!!!`;
+    if (combat.monster) {
+      em.fields[0].value = `
+      LETS FIGHT!!!`;
+    } else {
+      em.fields[0].value = `
+      Let the Pain Train begin, Chuga Chuga.`;
+    }
   }
   em.fields[1].name = `${combat.player1name} its your turn`;
   em.fields[1].value = `**🗡️** to attack or 🛡️ to Defend`;
@@ -233,10 +303,10 @@ const doBotCombat = async (combat, message) => {
   // console.log("Combat dobot: ", combat);
   var target = "player1";
   var en = "player2";
-  var botdmg = Math.floor(Math.random() * 10 + 0);
   let arr = ["🗡️", "🛡️"];
+
   const msg = await message.channel.send({
-    embed: botEmbedHandler(combat, botdmg),
+    embed: botEmbedHandler(combat),
   });
   await arr.forEach((x) => msg.react(x));
 
@@ -249,13 +319,15 @@ const doBotCombat = async (combat, message) => {
     .awaitReactions(filter, { max: 1 })
     .then((collected) => {
       const reaction = collected.first();
-      combat.player1hp -= botdmg;
+      var botdmg = Math.floor(Math.random() * 10 + 0);
+      combat.player2dmg = botdmg;
       if (reaction.emoji.name === "🗡️") {
         let dmg = Math.floor(Math.random() * 10 + 0);
         combat[en + "hp"] -= dmg;
-        combat.dmg = dmg;
+        combat.player1dmg = dmg;
         combat.turn += 1;
         combat.lastaction = "attack";
+        combat.player1hp -= botdmg;
         doHealthCheck(combat, message);
       } else {
         let heal = Math.floor(Math.random() * 3 + 1);
@@ -263,6 +335,7 @@ const doBotCombat = async (combat, message) => {
         combat.turn += 1;
         combat.lastaction = "heal";
         combat[target + "hp"] += heal;
+        combat.player1hp -= botdmg;
         doHealthCheck(combat, message);
       }
     })
@@ -302,6 +375,7 @@ const getcombat = async (args, message) => {
 const dic = {
   duel: startcombat,
   getcombat,
+  hunt,
 };
 
 module.exports = dic;

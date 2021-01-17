@@ -1,12 +1,12 @@
 const users = require("./userHandler").users;
 
 const ping = async (args, message) => {
-  await message.channel.send(`get fucked @${message.author.username}`);
+  await message.channel.send(`${message.author.toString()}, dont bother me`);
 };
 
 const punch = async (args, message) => {
   await message.channel.send(
-    `outright punches ${args[0]}, that wasnt very nice!`
+    `outright punches ${args[0]}, that was not very nice!`
   );
 };
 
@@ -38,7 +38,7 @@ const printuser = async (args, message) => {
     let em = require("./embeds").userEmbed;
     console.log("em: ", user);
     em.fields[0].value = user[0].username;
-    em.fields[1].value = user[0].class;
+    em.fields[1].value = user[0].class.name;
     em.fields[2].value = user[0].battlepoints;
     await message.channel.send({ embed: em });
   } else {
@@ -54,38 +54,28 @@ const edittopic = async (args, message) => {
 };
 
 const embed = async (args, message) => {
-  let em = require("./embeds").user2Embed;
-  console.log(message.author.avatarURL());
-  // console.log(em);
-  let arr = ["🗡️", "🛡️", "🏃"];
-  em.thumbnail.url = message.author.avatarURL();
-  em.author.name = message.author.username;
-  em.fields[0].value = "Starter";
-  em.fields[1].value = 1600;
-  const msg = await message.channel.send({ embed: em });
-  // args.map((x) => (em.title += ` ${x}`));
-  // await arr.forEach((x) => msg.react(x));
+  let em = require("./embeds").combatGifTest;
+  let arr = ["🗡️", "🛡️"];
+  const msg = await message.channel.send(em);
+  await arr.forEach((x) => msg.react(x));
+  const filter = (reaction, user) => {
+    // console.log("turn: ", combat[target + "name"]);
+    return arr.includes(reaction.emoji.name) && user.id == message.author.id;
+  };
+  msg
+    .awaitReactions(filter, { max: 1 })
+    .then((collected) => {
+      const reaction = collected.first();
 
-  // const filter = (reaction, user) => {
-  //   console.log("user: ", user);
-  //   return arr.includes(reaction.emoji.name) && user.id == message.author.id;
-  // };
-  // msg
-  //   .awaitReactions(filter, { max: 1, time: 60000, errors: ["time"] })
-  //   .then((collected) => {
-  //     const reaction = collected.first();
-
-  //     if (reaction.emoji.name === "🗡️") {
-  //       message.reply("yo");
-  //       reaction.message.delete();
-  //       // console.log("user: ", user);
-  //     } else {
-  //       message.reply("ohhh");
-  //     }
-  //   })
-  //   .catch((collected) => {
-  //     message.reply("you reacted with neither a thumbs up, nor a thumbs down.");
-  //   });
+      if (reaction.emoji.name === "🗡️") {
+        message.reply("awesome");
+      } else {
+        message.reply("less awesome");
+      }
+    })
+    .catch((collected) => {
+      message.reply("there has been an err in create embed");
+    });
 };
 
 const playchess = async (args, message) => {
@@ -95,12 +85,12 @@ const playchess = async (args, message) => {
 };
 
 const sayhi = async (args, message) => {
-  let num = message.author.id;
+  let num = message.client.ws.ping;
   // console.log("Here: ", message.guild.members.cache.get(id).user.username);
-  await message.channel.send(`<@!${num}>`);
+  await message.channel.send(`Ping: ${num}`);
 };
 
-const dic = {
+const dick = {
   ping,
   punch,
   hug,
@@ -113,4 +103,4 @@ const dic = {
   printclasses,
 };
 
-module.exports = dic;
+module.exports = dick;

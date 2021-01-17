@@ -1,4 +1,5 @@
 const commands = require("./Combat/combatCommands");
+const Discord = require("discord.js");
 
 const userEmbed = {
   color: 457774,
@@ -49,6 +50,12 @@ const combatEmbed = {
   description: "Some description here",
 };
 
+const testGifEmbed = new Discord.MessageEmbed()
+  .setTitle("Gif Test")
+  .setDescription("This is a test brought to you yaayaa")
+  .attachFiles(["./gfxs/test.gif"])
+  .setThumbnail("attachment://test.gif");
+
 const user2Embed = {
   thumbnail: {
     url: "https://cdn.discordapp.com/embed/avatars/0.png",
@@ -67,6 +74,22 @@ const user2Embed = {
     },
   ],
 };
+
+const combatGifTest = new Discord.MessageEmbed()
+  .setTitle("Turn 34")
+  .setColor("DD1362")
+  .attachFiles(["./gfxs/test.gif"])
+  .setThumbnail("attachment://test.gif")
+  .addFields(
+    {
+      name: "**Player1 hp :#** || **player2 hp: #**",
+      value: "@one has done dmg to @two",
+    },
+    {
+      name: "@person its your turn",
+      value: "🗡️ to attack or 🛡️ to defend",
+    }
+  );
 
 const combat2Embed = {
   title: "Failed ",
@@ -123,3 +146,5 @@ exports.classEmbed = classEmbed;
 exports.user2Embed = user2Embed;
 exports.combatEmbed = combatEmbed;
 exports.combat2Embed = combat2Embed;
+exports.testGifEmbed = testGifEmbed;
+exports.combatGifTest = combatGifTest;

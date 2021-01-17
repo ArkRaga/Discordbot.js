@@ -53,7 +53,6 @@ const combat = (c1, c2, rn1, rn2) => {
   } else {
     dmgTobeDone -= Math.round(c2.def * 0.9);
   }
-  // dmgTobeDone -= c2.def;
   if (dmgTobeDone <= 0) {
     dmgTobeDone = 1;
   }
@@ -79,19 +78,14 @@ const checkhp = (c1, c2) => {
   if (c1.hp <= 0 || c2.hp <= 0) {
     if (c1.hp <= 0) {
       c2.wins += 1;
-      // console.log(`${c2.name} Has won`);
     } else {
       c1.wins += 1;
-      // console.log(`${c1.name} Has won`);
     }
     times += 1;
-    // console.log("End Match");
-    // console.log("-                     -");
     return docombat();
   }
 
   c1.turns += 1;
-  // console.log(turn, "  turn ---- ", c1.name);
   return combat(c2, c1, doMath(c2.mod), doMath(c1.mod));
 };
 

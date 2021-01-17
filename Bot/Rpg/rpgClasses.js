@@ -1,8 +1,9 @@
 const werewolf = {
   name: "WereWolf",
-  str: 2,
-  def: 2,
+  str: 3,
+  def: 1,
   speed: 4,
+  mod: 25 + 4,
 };
 
 const knight = {
@@ -10,6 +11,7 @@ const knight = {
   str: 2,
   def: 4,
   speed: 2,
+  mod: 25 + 4,
 };
 
 const priest = {
@@ -17,6 +19,7 @@ const priest = {
   str: 1,
   def: 2,
   speed: 5,
+  mod: 25 + 5,
 };
 
 const startclass = {
@@ -24,6 +27,7 @@ const startclass = {
   str: 0,
   def: 0,
   speed: 0,
+  mod: 0,
 };
 
 const dic = {
