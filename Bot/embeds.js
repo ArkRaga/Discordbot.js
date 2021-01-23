@@ -22,27 +22,26 @@ const userEmbed = {
   ],
 };
 
-const classEmbed = {
-  title: "Some title",
-  color: 457774,
-  fields: [
+const classEmbed = new Discord.MessageEmbed()
+  .setTitle("some Title")
+  .setColor("457774")
+  .addFields(
     {
       name: " Strength ",
-      value: "",
+      value: "value",
       inline: false,
     },
     {
       name: " Defense: ",
-      value: "",
+      value: "value",
       inline: false,
     },
     {
       name: " Speed: ",
-      value: "",
+      value: "value",
       inline: false,
-    },
-  ],
-};
+    }
+  );
 
 const combatEmbed = {
   color: 0x0099ff,
@@ -53,8 +52,8 @@ const combatEmbed = {
 const testGifEmbed = new Discord.MessageEmbed()
   .setTitle("Gif Test")
   .setDescription("This is a test brought to you yaayaa")
-  .attachFiles(["./gfxs/test.gif"])
-  .setThumbnail("attachment://test.gif");
+  .attachFiles("./gfxs/Rick.png")
+  .setThumbnail("attachment://Rick.png");
 
 const user2Embed = {
   thumbnail: {
@@ -78,8 +77,8 @@ const user2Embed = {
 const combatGifTest = new Discord.MessageEmbed()
   .setTitle("Turn 34")
   .setColor("DD1362")
-  .attachFiles(["./gfxs/test.gif"])
-  .setThumbnail("attachment://test.gif")
+  .attachFiles("./gfxs/Rick.png")
+  .setThumbnail("attachment://Rick.png")
   .addFields(
     {
       name: "**Player1 hp :#** || **player2 hp: #**",
@@ -140,11 +139,15 @@ const exampleEmbed = {
   ],
 };
 
-exports.exampleEmbed = exampleEmbed;
-exports.userEmbed = userEmbed;
-exports.classEmbed = classEmbed;
-exports.user2Embed = user2Embed;
-exports.combatEmbed = combatEmbed;
-exports.combat2Embed = combat2Embed;
-exports.testGifEmbed = testGifEmbed;
-exports.combatGifTest = combatGifTest;
+const dic = {
+  exampleEmbed,
+  userEmbed,
+  classEmbed,
+  user2Embed,
+  combatEmbed,
+  combat2Embed,
+  testGifEmbed,
+  combatGifTest,
+};
+
+module.exports = dic;

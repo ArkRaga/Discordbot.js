@@ -1,9 +1,13 @@
+const skill = require("./skills");
+
 const werewolf = {
   name: "WereWolf",
   str: 3,
   def: 1,
   speed: 4,
   mod: 25 + 4,
+  atks: [skill.roar, skill.swordstrike],
+  gfx: { main: "Werewolf.png" },
 };
 
 const knight = {
@@ -12,6 +16,8 @@ const knight = {
   def: 4,
   speed: 2,
   mod: 25 + 4,
+  atks: [skill.roar, skill.swordstrike],
+  gfx: { main: "Knight.png" },
 };
 
 const priest = {
@@ -20,6 +26,8 @@ const priest = {
   def: 2,
   speed: 5,
   mod: 25 + 5,
+  atks: [skill.roar, skill.swordstrike],
+  gfx: { main: "Priest.png" },
 };
 
 const startclass = {

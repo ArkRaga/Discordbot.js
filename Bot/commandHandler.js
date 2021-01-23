@@ -3,11 +3,13 @@ const genCommands = require("./generalCommands");
 const combatReactionCommands = require("./Combat/combatReactHandler");
 const userCommands = require("./userHandler").dic;
 const { dic } = require("./userHandler");
+const inventoryCommands = require("./Rpg/inventory").dic;
 
 const commands = {
   ...genCommands,
   ...combatReactionCommands,
   ...userCommands,
+  ...inventoryCommands,
 };
 
 const commandHandler = async (command, args, message) => {

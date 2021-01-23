@@ -54,12 +54,18 @@ const edittopic = async (args, message) => {
 };
 
 const embed = async (args, message) => {
-  let em = require("./embeds").combatGifTest;
+  let emn = require("./embeds");
+  var em = emn.combatGifTest;
+  var c = users.filter((x) => x.discordid == message.author.id);
+  console.log("C: ", c);
+  em.attachFiles(`./gfxs/${c[0].class.gfx.main}`).setThumbnail(
+    `attachment://${c[0].class.gfx.main}`
+  );
+  em.fields[0].name = "Shanynays";
   let arr = ["🗡️", "🛡️"];
   const msg = await message.channel.send(em);
   await arr.forEach((x) => msg.react(x));
   const filter = (reaction, user) => {
-    // console.log("turn: ", combat[target + "name"]);
     return arr.includes(reaction.emoji.name) && user.id == message.author.id;
   };
   msg
@@ -90,6 +96,15 @@ const sayhi = async (args, message) => {
   await message.channel.send(`Ping: ${num}`);
 };
 
+const closeRoyal = (args, message) => {
+  message.channel.send("The sign up is closed!");
+};
+
+const timer = (args, message) => {
+  message.channel.send("Spots are open type !join to join");
+  setTimeout(closeRoyal, 1500, args, message);
+};
+
 const dick = {
   ping,
   punch,
@@ -101,6 +116,7 @@ const dick = {
   printuser,
   sayhi,
   printclasses,
+  timer,
 };
 
 module.exports = dick;

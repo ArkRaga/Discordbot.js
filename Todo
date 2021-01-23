@@ -1,0 +1,40 @@
+Battle Royal:
+    ☐ !join for a set ammount of time
+    ☐ put everyone in to array
+    ☐ set up attacking
+        ☐ !attack playername
+        ☐ everyone gets 1 attakc
+    ☐ set up round clearing
+    ☐ set up lose condition
+    ☐ set up win condition
+        ☐ give alot of battle points
+        ☐ give item(for rpg)
+    commands:
+        ☐ !join
+        ☐ !attack
+        ☐ !checkHp
+
+Pvp Combat:
+    ☐ Needs rebalanceing
+    ☐ handleing the formual for dmg
+    ☐ people who start first have an advantage???
+
+Crafting system:
+    ☐ Materials
+        ☐ Add,edit,delete
+        ☐ material stacking
+    ☐ items
+        ☐ crafting item
+        ☐ removeing item(turning in)
+    ☐ crafting book
+    ☐ player iventory
+    commands:
+        ☐ print player iventory
+        ☐ print material in inventory
+        ☐ look up material
+        ☐ look up item
+        ☐ look up quest/item to create
+
+
+monster drops:
+    ☐ fix the issue with monster drops in combat

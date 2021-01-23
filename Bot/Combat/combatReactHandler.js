@@ -1,5 +1,7 @@
 var users = require("../userHandler").users;
 var monsters = require("../Rpg/monsters");
+var inventorys = require("../Rpg/inventory").inventorys;
+var embed = require("../embeds");
 
 let combats = [];
 
@@ -60,7 +62,7 @@ const startcombat = async (args, message) => {
     return doBotCombat(combat[0], message);
   }
 
-  let em = require("../embeds").combatEmbed;
+  let em = embed.combatEmbed;
   let arr = ["🗡️", "🏃"];
   em.title = "A fight Has been issued!";
   em.description = `${
@@ -118,6 +120,7 @@ const hunt = async (args, message) => {
     player1hp: 10,
     player2: en.name,
     player2name: en.name,
+    en: en,
     player2hp: 10,
     state: combatState[0],
   });
@@ -132,7 +135,7 @@ const hunt = async (args, message) => {
 
 const accept = async (args, message, p2id) => {
   const combat = combats.filter((x) => x.player2 == p2id);
-  let em = require("../embeds").combatEmbed;
+  let em = embed.combatEmbed;
   em.title = "Lets Go!";
   em.description = `<@!${combat[0].player1}>, <@!${combat[0].player2}> Has accepted your challenge`;
   const msg = await message.channel.send({ embed: em });
@@ -151,11 +154,17 @@ const doHealthCheck = async (combat, message) => {
   if (combat.player1hp <= 0 || combat.player2hp <= 0) {
     var winner = combat.player1hp <= 0 ? "player2" : "player1";
     combats = combats.filter((x) => x.player2 != combat.player2);
-    let em = require("../embeds").combatEmbed;
+    let em = embed.combatEmbed;
     em.title = " Final Turn";
-    em.description = ` **${combat[winner + "name"]}** delt a final blow of ** ${
-      combat[winner + "dmg"]
-    }** dmg `;
+    if (combat.monster) {
+      em.description = ` **${
+        combat[winner + "name"]
+      }** delt a final blow of ** ${combat[winner + "dmg"]}** dmg `;
+    } else {
+      em.description = ` **${
+        combat[winner + "name"]
+      }** delt a final blow of ** ${combat.dmg}** dmg `;
+    }
     await message.channel.send({ embed: em });
     return await doWin(combat, message, winner);
   }
@@ -170,18 +179,31 @@ const doHealthCheck = async (combat, message) => {
 
 const doWin = async (combat, message, winner) => {
   var en = winner == "player1" ? "player2" : "player1";
-
-  let em = require("../embeds").combatEmbed;
+  let em = embed.combatEmbed;
   em.title = "It was a Battle for the Gods!";
   em.description = `Ultimately <@!${combat[winner]}>, came out with the win aginst their powerful foe <@!${combat[en]}>! the fight was a must see folks! `;
   await message.channel.send({ embed: em });
   let fighters = users.filter(
     (x) => x.discordid == combat.player1 || x.discordid == combat.player2
   );
-  console.log("Fighters: ", fighters);
-  console.log("Combat: ", combat);
+  // console.log("Fighters: ", fighters);
+  // console.log("Combat: ", combat);
   if (combat.monster) {
-    console.log("Ding");
+    if (combat[winner] != combat.en.name) {
+      var i = inventorys.filter((x) => x.discordid == combat.winner);
+      if (i.length > 0) {
+        var item = i[0].items.filter((x) => x.id == combat.en.drops[0].id);
+        if (item.length > 0) {
+          item[0].quantity += 1;
+        }
+      } else {
+        inv = {
+          discordid: combat[winner],
+          items: [combat.en.drops[0]],
+        };
+        inventorys.push(inv);
+      }
+    }
     return;
   }
   if (fighters[0].discordid == combat.winner) {
@@ -203,7 +225,7 @@ const doWin = async (combat, message, winner) => {
 
 const createEmbed = (combat, target, en) => {
   // console.log("createEmbed");
-  let em = require("../embeds").combat2Embed;
+  let em = embed.combat2Embed;
   em.title = `Turn ${combat.turn}`;
   em.fields[0].name = `${combat[en + "name"]} Hp: ${combat[en + "hp"]} || ${
     combat[target + "name"]
@@ -266,7 +288,7 @@ const pvpCombat = async (combat, message) => {
 
 const botEmbedHandler = (combat) => {
   // console.log("botembed");
-  let em = require("../embeds").combat2Embed;
+  let em = embed.combat2Embed;
   let en = combat.monster ? combat.player2name : `<@!${combat.player2}>`;
   var enatk = "";
   em.title = `Turn ${combat.turn}`;

@@ -33,25 +33,61 @@ const pickclass = async (args, message) => {
     );
   }
   var picked = classes[args[0].toLowerCase()];
+
   if (!picked) {
     return await message.channel.send(
       "Please pick a valid class from the class list. you can view it with **!printclasses**"
     );
   }
   user[0].class = picked;
+
   await message.channel.send(`your class is now a : **${picked.name}**`);
 };
 
 const classdetails = async (args, message) => {
   var em = require("./embeds").classEmbed;
   var id = message.author.id;
+  if (args.length > 0) {
+    var userclass = classes[args[0].toLowerCase()];
+    if (!userclass) {
+      return await message.channel.send("Sorry you didnt enter a vaild class");
+    }
+
+    em.setTitle(`${userclass.name}`);
+    em.attachFiles(`./gfxs/${userclass.gfx.main}`);
+    em.setThumbnail(`attachment://${userclass.gfx.main}`);
+    em.fields[0].value = userclass.str;
+    em.fields[1].value = userclass.def;
+    em.fields[2].value = userclass.speed;
+    await message.channel.send(em);
+    em.files = [];
+  } else {
+    var userclass = getUserCLass(id);
+    if (userclass.name == classes.startclass.name) {
+      return await message.channel.send(
+        "Sorry you have not picked a class yet. use **!pickclass classname** to select a class, or **!classdetails classname** to get information on a class."
+      );
+    }
+    em.setTitle(`${userclass.name}`);
+    em.attachFiles(`./gfxs/${userclass.gfx.main}`);
+    em.setThumbnail(`attachment://${userclass.gfx.main}`);
+    em.title = userclass.name;
+    em.fields[0].value = userclass.str;
+    em.fields[1].value = userclass.def;
+    em.fields[2].value = userclass.speed;
+    await message.channel.send(em);
+    em.files = [];
+  }
+};
+
+const getUserCLass = (id) => {
   var user = users.filter((x) => x.discordid == id);
   var userclass = classes[user[0].class.name.toLowerCase()];
-  em.title = userclass.name;
-  em.fields[0].value = userclass.str;
-  em.fields[1].value = userclass.def;
-  em.fields[2].value = userclass.speed;
-  await message.channel.send({ embed: em });
+  if (userclass) {
+    return userclass;
+  } else {
+    return "No class";
+  }
 };
 
 const changeclass = async (args, message) => {
