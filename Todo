@@ -19,20 +19,29 @@ Pvp Combat:
     ☐ handleing the formual for dmg
     ☐ people who start first have an advantage???
 
+Questing system:
+    ☐ Type of quest
+    ☐ sudo quest log
+    
+    commands:
+        ☐ !accept
+        ☐ !quest
+
+
 Crafting system:
-    ☐ Materials
-        ☐ Add,edit,delete
-        ☐ material stacking
+    ✔ Materials @done(21-01-23 21:37)
+        ✔ Add,edit,delete @done(21-01-23 21:35)
+        ✔ material stacking @done(21-01-23 21:35)
     ☐ items
-        ☐ crafting item
+        ✔ crafting item @done(21-01-23 21:35)
         ☐ removeing item(turning in)
     ☐ crafting book
-    ☐ player iventory
+    ✔ player iventory @done(21-01-23 21:36)
     commands:
-        ☐ print player iventory
-        ☐ print material in inventory
-        ☐ look up material
-        ☐ look up item
+        ✔ print player iventory @done(21-01-23 21:36)
+        ✔ print material in inventory @done(21-01-23 21:36)
+        ✔ look up material @done(21-01-23 21:36)
+        ✔ look up item @done(21-01-23 21:36)
         ☐ look up quest/item to create
 
 

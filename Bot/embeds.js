@@ -90,6 +90,43 @@ const combatGifTest = new Discord.MessageEmbed()
     }
   );
 
+const invEmbed = new Discord.MessageEmbed().addFields(
+  {
+    name: "Name",
+    value: "text",
+  },
+  {
+    name: "Inventory",
+    value: "text",
+  }
+);
+
+const itemEmbed = new Discord.MessageEmbed()
+  .attachFiles("./gfxs/Rick.png")
+  .setThumbnail("attachment://Rick.png")
+  .addFields(
+    {
+      name: "Id",
+      value: "000",
+      inline: true,
+    },
+    {
+      name: "Name",
+      value: "🗡️ to attack or 🛡️ to defend",
+      inline: true,
+    },
+    {
+      name: "Type",
+      value: "undefined",
+      inline: false,
+    },
+    {
+      name: "Description",
+      value: "text",
+      inline: false,
+    }
+  );
+
 const combat2Embed = {
   title: "Failed ",
   color: 16187396,
@@ -148,6 +185,8 @@ const dic = {
   combat2Embed,
   testGifEmbed,
   combatGifTest,
+  itemEmbed,
+  invEmbed,
 };
 
 module.exports = dic;

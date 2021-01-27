@@ -91,9 +91,19 @@ const playchess = async (args, message) => {
 };
 
 const sayhi = async (args, message) => {
-  let num = message.client.ws.ping;
-  // console.log("Here: ", message.guild.members.cache.get(id).user.username);
-  await message.channel.send(`Ping: ${num}`);
+  // pelt quanity 20 quality "rare"
+  var item = args[0];
+  var msg = "";
+  args.forEach((x, i) => {
+    if (i != 0) {
+      var n = i;
+      n += 1;
+      if (n % 2 === 0) {
+        msg += ` key: ${args[i]}, value: ${args[i + 1]} \n`;
+      }
+    }
+  });
+  await message.channel.send(` item: ${item}, ${msg}`);
 };
 
 const closeRoyal = (args, message) => {

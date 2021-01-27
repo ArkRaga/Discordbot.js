@@ -1,6 +1,6 @@
 var users = require("../userHandler").users;
 var monsters = require("../Rpg/monsters");
-var inventorys = require("../Rpg/inventory").inventorys;
+var inven = require("../Rpg/inventory");
 var embed = require("../embeds");
 
 let combats = [];
@@ -124,6 +124,7 @@ const hunt = async (args, message) => {
     player2hp: 10,
     state: combatState[0],
   });
+
   let combat = combats.filter(
     (x) => x.player1 == message.author.id || x.player2 == message.author.id
   );
@@ -152,7 +153,11 @@ const deny = async (args, message, p2id) => {
 const doHealthCheck = async (combat, message) => {
   // console.log("Dohealth ");
   if (combat.player1hp <= 0 || combat.player2hp <= 0) {
-    var winner = combat.player1hp <= 0 ? "player2" : "player1";
+    if (combat.monster) {
+      var winner = combat.player2hp <= 0 ? "player1" : "player2";
+    } else {
+      var winner = combat.player1hp <= 0 ? "player2" : "player1";
+    }
     combats = combats.filter((x) => x.player2 != combat.player2);
     let em = embed.combatEmbed;
     em.title = " Final Turn";
@@ -190,19 +195,12 @@ const doWin = async (combat, message, winner) => {
   // console.log("Combat: ", combat);
   if (combat.monster) {
     if (combat[winner] != combat.en.name) {
-      var i = inventorys.filter((x) => x.discordid == combat.winner);
-      if (i.length > 0) {
-        var item = i[0].items.filter((x) => x.id == combat.en.drops[0].id);
-        if (item.length > 0) {
-          item[0].quantity += 1;
-        }
-      } else {
-        inv = {
-          discordid: combat[winner],
-          items: [combat.en.drops[0]],
-        };
-        inventorys.push(inv);
+      var i = inven.getinv(combat[winner]);
+      if (!i) {
+        inven.adduserinv(combat[winner], combat[winner + "name"]);
       }
+      var i = inven.getinv(combat[winner]);
+      inven.additem(i, combat.en.drops[0]);
     }
     return;
   }
