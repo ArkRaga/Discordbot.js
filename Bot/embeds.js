@@ -101,6 +101,21 @@ const invEmbed = new Discord.MessageEmbed().addFields(
   }
 );
 
+const qstEmbed = new Discord.MessageEmbed().addFields(
+  {
+    name: "Name",
+    value: "text",
+  },
+  {
+    name: "Description",
+    value: "text",
+  },
+  {
+    name: "Rewards",
+    value: "text",
+  }
+);
+
 const itemEmbed = new Discord.MessageEmbed()
   .attachFiles("./gfxs/Rick.png")
   .setThumbnail("attachment://Rick.png")
@@ -187,6 +202,7 @@ const dic = {
   combatGifTest,
   itemEmbed,
   invEmbed,
+  qstEmbed,
 };
 
 module.exports = dic;

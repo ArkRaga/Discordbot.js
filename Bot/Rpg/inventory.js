@@ -93,7 +93,7 @@ const getinvitem = (inv, i) => {
     return item[0];
   } else {
     // console.log("Get Item not found in inv");
-    return undefined;
+    return false;
   }
 };
 

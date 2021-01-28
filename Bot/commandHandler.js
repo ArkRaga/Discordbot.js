@@ -4,7 +4,7 @@ const combatReactionCommands = require("./Combat/combatReactHandler");
 const userCommands = require("./userHandler").dic;
 const { dic } = require("./userHandler");
 const inventoryCommands = require("./Rpg/inventory");
-const questSystemHandler = require("./Rpg/QuestsLog");
+const questSystemHandler = require("./Rpg/questHandler");
 
 const commands = {
   ...genCommands,
