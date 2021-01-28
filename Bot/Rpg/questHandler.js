@@ -15,6 +15,15 @@ quest:{
 }
 */
 
+const getLogByID = (id) => {
+  let log = questLog.filter((x) => x.discordId == id)
+  if (log.length > 0) {
+    return log[0]
+  } else {
+    return false
+  }
+}
+
 const printallqstlogs = (args, message) => {
   console.log('Quest logs: ', questLog)
   message.channel.send('Printed all Quest logs Sir.')
@@ -50,7 +59,7 @@ const printuserqstlog = (args, message) => {
     em.fields[0].value = `<@!${message.author.id}>`
     log.quests.forEach((x, i) => (msg += `${i + 1} : ${x.name} \n`))
     em.fields[1].name = 'Quest Log'
-    em.fields[1].value = msg
+    em.fields[1].value = msg || 'You have no quests!'
     // console.log("LOG: ", log);
     message.channel.send(em)
   } else {
@@ -98,15 +107,6 @@ const giveqst = (args, message) => {
     log.quests.push(qst)
     console.log('Pushed qst: ', qst)
     message.channel.send(`Added ${qst.name} to your quest log sir.`)
-  }
-}
-
-const getLogByID = (id) => {
-  let log = questLog.filter((x) => x.discordId == id)
-  if (log.length > 0) {
-    return log[0]
-  } else {
-    return false
   }
 }
 

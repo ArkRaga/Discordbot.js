@@ -190,7 +190,7 @@ const doWin = async (combat, message, winner) => {
       if (!i) {
         inven.adduserinv(combat[winner], combat[winner + 'name'])
       }
-      let i = inven.getinv(combat[winner])
+      i = inven.getinv(combat[winner])
       inven.additem(i, combat.en.drops[0])
     }
     return

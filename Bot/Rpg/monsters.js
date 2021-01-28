@@ -1,7 +1,7 @@
 /// add lava Golem for noob
 /// add mimic - trixiehorror
 const skill = require('./skills')
-const items = require('./items')
+const { items } = require('./items')
 
 const AnimalTypes = {
   ANIMAL: 0,
@@ -38,7 +38,7 @@ const wolf = new Enemy({
   speed: 3,
   def: 1,
   atks: [skill.bite, skill.swipe, skill.roar],
-  drops: [items.pelt],
+  drops: [new items.Pelt(3)],
 })
 const lavagolem = new Enemy({
   id: 1,

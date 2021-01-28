@@ -1,6 +1,7 @@
-inventorys = []
-let items = require('./items')
-let fs = require('fs')
+const inventorys = []
+const { items, itemDictionary } = require('./items')
+const fs = require('fs')
+const { ItemTypes } = require('./items')
 
 /*
 iventory:
@@ -38,7 +39,7 @@ const additem = (inv, item) => {
   let userinv = inv
   let i = getinvitem(userinv, item)
   if (i) {
-    i.quanity += 1
+    i.quantity += 1
   } else {
     if (!item) {
       return console.log('invaild item: ', item)
@@ -55,16 +56,16 @@ const removeitemfrominv = (id, i) => {
 const getitem = (args) => {
   switch (args[0]) {
     case 'name':
-      return items[args[1]]
+      return itemDictionary[args[1]]
     case 'id':
-      for (i in items) {
-        if (items[i].id == args[1]) {
-          return items[i]
+      for (i in itemDictionary) {
+        if (itemDictionary[i].id == args[1]) {
+          return itemDictionary[i]
         }
       }
       break
     default:
-      return items[args[0]]
+      return itemDictionary[args[0]]
   }
 }
 
@@ -81,7 +82,7 @@ const checkinvitem = (inv, item) => {
 
 const editinvitem = (id, item, key, value) => {
   let inv = getinv(id)
-  let item = getinvitem(inv, item)
+  item = getinvitem(inv, item)
   item[key] = value
 }
 
@@ -108,20 +109,20 @@ const itemEmbed = (item) => {
     em.attachFiles('./gfxs/testItem.png')
     em.setThumbnail('attachment://testItem.png')
   }
-  if (item.type == 'material') {
+  if (item.type == ItemTypes.MATERIAL) {
     em.fields[0].value = item.id
     em.fields[1].value = item.name
     em.fields[2].value = 'Material'
     em.fields[3].name = 'Quality'
-    em.fields[3].value = item.quality
+    em.fields[3].value = item.quality // Im the number in the enum, you need to implement something to look up quality names :D
   }
-  if (item.type == 'crafteditem') {
+  if (item.type == ItemTypes.CRAFTEDITEM) {
     em.fields[0].value = item.id
     em.fields[1].value = item.name
     em.fields[2].value = 'Crafted item'
     em.fields[3].name = 'Required Mats:'
     let m = ''
-    item.mats.forEach((x) => (m += ` **${x.name}** x${x.quanity}, \n`))
+    item.mats.forEach((x) => (m += ` **${x.name}** x${x.quantity}, \n`))
     em.fields[3].value = m
   }
   return em
@@ -145,7 +146,7 @@ const craft = (args, message) => {
       message.channel.send('you do not have the material required')
       return (canCraft = false)
     }
-    if (ele.quanity > getinvitem(inv, ele).quanity) {
+    if (ele.quantity > getinvitem(inv, ele).quantity) {
       message.channel.send(` you do not have enough of **${ele.name}**`)
       return (canCraft = false)
     }
@@ -154,8 +155,8 @@ const craft = (args, message) => {
     return
   }
   item.mats.forEach((ele) => {
-    if (getinvitem(inv, ele).quanity > ele.quanity) {
-      getinvitem(inv, ele).quanity -= ele.quanity
+    if (getinvitem(inv, ele).quantity > ele.quantity) {
+      getinvitem(inv, ele).quantity -= ele.quantity
     } else {
       removeitemfrominv(message.author.id, ele)
     }
@@ -176,34 +177,37 @@ const addinv = (args, message) => {
 
 const item = (args, message) => {
   switch (args[0]) {
-    case 'name':
-      let item = items[args[1]]
-      message.channel.send(itemEmbed(item))
+    case 'name': {
+      let SelectedItem = itemDictionary[args[1]].itemClass
+      message.channel.send(itemEmbed(new SelectedItem()))
       break
-    case 'id':
-      for (i in items) {
-        if (items[i].id == args[1]) {
-          let item = items[i]
-          message.channel.send(itemEmbed(item))
+    }
+    case 'id': {
+      for (i in itemDictionary) {
+        if (itemDictionary[i].id == args[1]) {
+          let SelectedItem = itemDictionary[i].itemClass
+          message.channel.send(itemEmbed(new SelectedItem()))
         }
       }
       break
-    default:
+    }
+    default: {
       console.log('boom')
-      let item = items[args[0]]
-      if (item) {
-        message.channel.send(itemEmbed(item))
-      } else {
-        message.channel.send('no item found please try again')
-      }
+      //let SelectedItem = itemDictionary[args[0]].itemClass
+      //if (SelectedItem) {
+      //  message.channel.send(itemEmbed(new SelectedItem()))
+      //} else {
+      message.channel.send('no item found please try again')
+      //}
       break
+    }
   }
 }
 
 const edititem = (args, message) => {
   let inv = getinv(message.author.id)
   let i = getitem(args)
-  let item = getinvitem(inv, i)
+  let item = getinvitem(inv, new i.itemClass())
   if (!item) {
     return message.channel.send('You do not have this item')
   }
@@ -217,7 +221,7 @@ const edititem = (args, message) => {
 
 const removeinvitem = (args, message) => {
   let item = getitem(args)
-  removeitemfrominv(message.author.id, item)
+  removeitemfrominv(message.author.id, new item.itemClass())
 }
 
 const printmyinv = (args, message) => {
@@ -226,7 +230,7 @@ const printmyinv = (args, message) => {
   let emn = require('../embeds')
   let em = emn.invEmbed
   let msg = ''
-  inv.items.forEach((x) => (msg += ` ${x.name} x${x.quanity}\n`))
+  inv.items.forEach((x) => (msg += ` ${x.name} x${x.quantity}\n`))
   em.fields[0].value = `<@!${message.author.id}>`
   em.fields[1].value = msg
   message.channel.send(em)
@@ -235,13 +239,15 @@ const printmyinv = (args, message) => {
 const giveitem = (args, message) => {
   let userinv = getinv(message.author.id)
   let item = getitem(args)
-  let i = item ? getinvitem(userinv, item) : false
+  let i = item ? getinvitem(userinv, new item.itemClass()) : false
   if (!item) {
     return message.channel.send('no item was found.')
   }
   if (i) {
-    i.quanity += 1
+    i.quantity += 1
   } else {
+    item = new item.itemClass()
+
     args.forEach((x, i) => {
       if (i != 0) {
         let n = i

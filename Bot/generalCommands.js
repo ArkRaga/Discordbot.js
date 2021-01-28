@@ -89,7 +89,7 @@ const playchess = async (args, message) => {
 }
 
 const sayhi = async (args, message) => {
-  // pelt quanity 20 quality "rare"
+  // pelt quantity 20 quality "rare"
   let item = args[0]
   let msg = ''
   args.forEach((x, i) => {

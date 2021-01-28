@@ -1,6 +1,6 @@
-const items = require("./Items");
+const { items } = require('./items')
 
-const goods = "theItemsOrThingsYouNeedToBringMeToCompleteThisQuest";
+const goods = 'theItemsOrThingsYouNeedToBringMeToCompleteThisQuest'
 
 /*
 quest:{
@@ -12,16 +12,12 @@ quest:{
 
 const peltforpelt = {
   id: 1,
-  name: "Pelt for a pelt",
-  desc: "bring 10 normal quailty pelts",
-  theItemsOrThingsYouNeedToBringMeToCompleteThisQuest: [
-    { ...items.pelt, quanity: 10 },
-  ],
-  rewards: [items.furarmor],
-};
+  name: 'Pelt for a pelt',
+  desc: 'bring 10 normal quailty pelts',
+  theItemsOrThingsYouNeedToBringMeToCompleteThisQuest: [new items.Pelt(10)],
+  rewards: [new items.FurArmour()],
+}
 
-const dic = {
+module.exports = {
   peltforpelt,
-};
-
-module.exports = dic;
+}
