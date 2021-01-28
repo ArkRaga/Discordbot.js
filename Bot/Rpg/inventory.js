@@ -2,6 +2,7 @@ const inventorys = []
 const { items, itemDictionary } = require('./items')
 const fs = require('fs')
 const { ItemTypes } = require('./items')
+const { ItemDictionaryEntry } = require('./items')
 
 /*
 iventory:
@@ -86,6 +87,11 @@ const editinvitem = (id, item, key, value) => {
   item[key] = value
 }
 
+/**
+ * Finds an item in a users inventory
+ * @param {object} inv A users inventory
+ * @param {object} i Either an Item instance or a ItemDictionaryEntry instance that we are going to look for by name
+ */
 const getinvitem = (inv, i) => {
   // Get an item in a inventory
   let item = inv.items.filter((x) => x.name == i.name)
@@ -192,13 +198,12 @@ const item = (args, message) => {
       break
     }
     default: {
-      console.log('boom')
-      //let SelectedItem = itemDictionary[args[0]].itemClass
-      //if (SelectedItem) {
-      //  message.channel.send(itemEmbed(new SelectedItem()))
-      //} else {
-      message.channel.send('no item found please try again')
-      //}
+      let SelectedItem = itemDictionary[args[0]].itemClass
+      if (SelectedItem) {
+        message.channel.send(itemEmbed(new SelectedItem()))
+      } else {
+        message.channel.send('no item found please try again')
+      }
       break
     }
   }

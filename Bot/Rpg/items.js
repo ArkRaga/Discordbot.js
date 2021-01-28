@@ -62,7 +62,7 @@ class FurArmour extends CraftedItem {
   }
 }
 
-class DictionaryEntry {
+class ItemDictionaryEntry {
   constructor({ itemClass, name, id }) {
     this.itemClass = itemClass
     this.name = name
@@ -71,17 +71,17 @@ class DictionaryEntry {
 }
 
 const itemDictionary = {
-  pelt: new DictionaryEntry({
+  pelt: new ItemDictionaryEntry({
     itemClass: Pelt,
     name: 'Pelt',
     id: 1,
   }),
-  sharpTooth: new DictionaryEntry({
+  sharpTooth: new ItemDictionaryEntry({
     itemClass: SharpTooth,
     name: 'Sharp Tooth',
     id: 3,
   }),
-  furArmour: new DictionaryEntry({
+  furArmour: new ItemDictionaryEntry({
     itemClass: FurArmour,
     name: 'Fur Armour',
     id: 0,
