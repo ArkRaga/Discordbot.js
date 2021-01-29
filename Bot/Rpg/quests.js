@@ -1,6 +1,6 @@
-const { items } = require('./items')
+const { itemDictionary } = require("./items");
 
-const goods = 'theItemsOrThingsYouNeedToBringMeToCompleteThisQuest'
+const goods = "theItemsOrThingsYouNeedToBringMeToCompleteThisQuest";
 
 /*
 quest:{
@@ -12,12 +12,14 @@ quest:{
 
 const peltforpelt = {
   id: 1,
-  name: 'Pelt for a pelt',
-  desc: 'bring 10 normal quailty pelts',
-  theItemsOrThingsYouNeedToBringMeToCompleteThisQuest: [new items.Pelt(10)],
-  rewards: [new items.FurArmour()],
-}
+  name: "Pelt for a pelt",
+  desc: "bring 10 normal quailty pelts",
+  theItemsOrThingsYouNeedToBringMeToCompleteThisQuest: [
+    new itemDictionary.pelt.itemClass(10),
+  ],
+  rewards: [new itemDictionary.furarmor.itemClass()],
+};
 
 module.exports = {
   peltforpelt,
-}
+};
