@@ -81,6 +81,13 @@ const checkinvitem = (inv, item) => {
   return hasitem;
 };
 
+/**
+ * Edits an item in a users inventory
+ * @param {number} id A users id
+ * @param {object} item Item to be edited
+ * @param {string} key what value on item you want to edit
+ * @param {string} value the value you want the key changed to
+ */
 const editinvitem = (id, item, key, value) => {
   let inv = getinv(id);
   item = getinvitem(inv, item);
@@ -88,7 +95,7 @@ const editinvitem = (id, item, key, value) => {
 };
 
 /**
- * Finds an item in a users inventory
+ * Finds an item in a users inventory, returns the item, or returns false
  * @param {object} inv A users inventory
  * @param {object} i Either an Item instance or a ItemDictionaryEntry instance that we are going to look for by name
  */

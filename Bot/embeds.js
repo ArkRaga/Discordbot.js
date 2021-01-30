@@ -22,6 +22,11 @@ const userEmbed = {
   ],
 };
 
+const questBoardEmbed = new Discord.MessageEmbed()
+  .setTitle("Quest Board")
+  .setDescription("Here are the available quest you can take")
+  .addFields();
+
 const classEmbed = new Discord.MessageEmbed()
   .setTitle("some Title")
   .setColor("457774")
@@ -203,6 +208,7 @@ const dic = {
   itemEmbed,
   invEmbed,
   qstEmbed,
+  questBoardEmbed,
 };
 
 module.exports = dic;
