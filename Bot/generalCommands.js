@@ -95,7 +95,7 @@ const sayhi = async (args, message) => {
   let em = emn.combatEmbed;
   em.description = "just click something";
 
-  let arr = ["🗡️", "🛡️"];
+  let arr = ["🗡️", "🛡️", "🔥", "❤️", "📖"];
   const msg = await message.channel.send({
     embed: em,
   });
@@ -107,15 +107,17 @@ const sayhi = async (args, message) => {
   };
 
   msg
-    .awaitReactions(filter, { max: 1 })
+    .awaitReactions(filter, { max: 4 })
     .then((collected) => {
-      const reaction = collected.first();
-      if (reaction.emoji.name === "🗡️") {
-        message.reply("sword");
-      } else {
-        message.reply("not sword");
-      }
-      reaction.users.remove(message.author.id);
+      console.log("Size: ", collected.size);
+      collected.each((x) => {
+        if (x.emoji.name === arr[0]) {
+          message.reply("sword");
+        } else {
+          message.reply("notsword");
+        }
+        collected.users.remove(message.author.id);
+      });
     })
     .catch((collected) => {
       message.reply("there has been an err in create embed");

@@ -1,5 +1,5 @@
-questLog = [];
-const quests = require("./quests");
+// questLog = [];
+const { quests } = require("./quests");
 
 /*
  questlog: {
@@ -7,7 +7,6 @@ const quests = require("./quests");
     name: username,
     quests: []
 }
-
 quest:{
     name: of quest,
     description: what todo,
@@ -15,40 +14,66 @@ quest:{
 }
 */
 
-const getLogByID = (id) => {
-  let log = questLog.filter((x) => x.discordId == id);
-  if (log.length > 0) {
-    return log[0];
-  } else {
+class QuestLogHandler {
+  constructor() {
+    this.questlogs = [];
+  }
+  addQuestlog(id, name) {
+    //check if exsits
+    if (!this.hasQuestlog(id)) {
+      this.questlogs.push(new Questlog({ id, name }));
+      return;
+    }
     return false;
   }
-};
+  getQuestlog(id) {
+    return this.questlogs.find((x) => x.id == id);
+  }
+  hasQuestlog(id) {
+    return this.questlogs.some((x) => x.id == id);
+  }
+}
+
+class Questlog {
+  constructor({ id, name }) {
+    this.id = id;
+    this.name = name;
+    this.quests = [];
+  }
+  addQuest(quest) {
+    if (!this.hasQuest(quest)) {
+      this.quests.push(quest);
+      return;
+    }
+    return false;
+  }
+  hasQuest(quest) {
+    return this.quests.some((x) => x.id === quest.id);
+  }
+  delQuest(quest) {
+    const q = this.quests.filter((x) => x.id !== quest.id);
+  }
+}
+
+const questlogs = new QuestLogHandler();
 
 const printallqstlogs = (args, message) => {
-  console.log("Quest logs: ", questLog);
+  console.log("Quest logs: ", queslogs.queslogs);
   message.channel.send("Printed all Quest logs Sir.");
 };
 
 const createqstlog = (args, message) => {
-  let userlog = getLogByID(message.author.id);
-
-  if (userlog) {
-    console.log("quest log: ", userlog);
+  if (questlogs.hasQuestlog(message.author.id)) {
     message.channel.send("Quest log already exists.");
   } else {
-    let log = {
-      discordId: message.author.id,
-      name: message.author.username,
-      quests: [],
-    };
-    questLog.push(log);
-    console.log("Added quest log: ", log);
+    questlogs.addQuestlog(message.author.id, message.author.username);
+    console.log("Added quest log: ", questlogs.getQuestlog(message.author.id));
     message.channel.send("Quest log has been created.");
   }
 };
 
-const printuserqstlog = (args, message) => {
-  let log = getLogByID(message.author.id);
+const myqstlog = (args, message) => {
+  let log = questlogs.getQuestlog(message.author.id);
   if (log) {
     let emn = require("../embeds");
     let em = emn.invEmbed;
@@ -93,21 +118,13 @@ const quest = (args, message) => {
 };
 
 const giveqst = (args, message) => {
-  let log = getLogByID(message.author.id);
-  if (!log) {
-    message.channel.send("No quest log");
-  } else {
-    let qst = getQst(args[0]);
-    if (!qst) {
-      return message.channel.send("Not valid quest");
-    }
-    if (userhasqst(qst, message.author.id)) {
-      return message.channel.send(`User already has qst: ${qst.name}.`);
-    }
-    log.quests.push(qst);
-    console.log("Pushed qst: ", qst);
-    message.channel.send(`Added ${qst.name} to your quest log sir.`);
+  let qst = getQst(args[0]);
+  if (!qst) {
+    return message.channel.send("Not valid quest");
   }
+  questlogs.getQuestlog(message.author.id).addQuest(qst);
+  console.log("Pushed qst: ", qst);
+  message.channel.send(`Added ${qst.name} to your quest log sir.`);
 };
 
 const qstboard = (args, message) => {
@@ -117,27 +134,18 @@ const qstboard = (args, message) => {
   em.attachFiles("./gfxs/QuestBoard.png");
   em.setThumbnail("attachment://QuestBoard.png");
   for (i in quests) {
+    const q = new quests[i]();
     em.fields.push({
-      name: `${quests[i].name}`,
-      value: `${quests[i].desc} \n Reward: ${quests[i].rewards[0].name} x${quests[i].rewards[0].quantity}`,
+      name: `${q.name}`,
+      value: `${q.desc} \n Reward: ${q.rewards[0].name} x${q.rewards[0].quantity}`,
     });
   }
   em.setFooter("use !giveqst questname to accept the quest");
   message.channel.send(em);
 };
 
-const userhasqst = (qst, id) => {
-  let log = getLogByID(id);
-  let q = log.quests.filter((x) => x.id == qst.id);
-  if (q.length > 0) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
 const getQst = (qst) => {
-  let qs = quests[qst];
+  let qs = new quests[qst]();
   if (qs) {
     console.log("Qst: ", qs);
     return qs;
@@ -150,7 +158,7 @@ const getQst = (qst) => {
 const dic = {
   printallqstlogs,
   createqstlog,
-  printuserqstlog,
+  myqstlog,
   printqst,
   giveqst,
   quest,

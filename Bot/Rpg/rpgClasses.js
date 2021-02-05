@@ -1,4 +1,5 @@
 const skill = require("./skills");
+const { talents } = require("./talents");
 
 const werewolf = {
   name: "WereWolf",
@@ -34,6 +35,7 @@ const startclass = {
   name: "StartClass",
   str: 0,
   def: 0,
+  talent: new talents.HealOnTurn(),
   speed: 0,
   mod: 0,
 };

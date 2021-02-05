@@ -1,142 +1,157 @@
-const users = []
-const { startclass } = require('./Rpg/rpgClasses')
-let classes = require('./Rpg/rpgClasses')
+let classes = require("./Rpg/rpgClasses");
 /// username, discordId, Class, battlepoints,
 
-const handleUsers = (e) => {
-  let user = users.filter((x) => x.discordid == e.id)
-  // console.log("USer: ", user);
-  if (user.length <= 0) {
-    users.push({
-      discordid: e.id,
-      username: e.username,
-      battlepoints: 0,
-      class: classes.startclass,
-    })
+class userHandler {
+  constructor() {
+    this.users = [];
+  }
+  addUser(author) {
+    if (!this.hasUser(author.id)) {
+      this.users.push(
+        new User({
+          id: author.id,
+          name: author.username,
+          bclass: classes.startclass,
+        })
+      );
+    }
+  }
+  getUser(id) {
+    return this.users.find((x) => x.id === id);
+  }
+  hasUser(id) {
+    return this.users.some((x) => x.id === id);
   }
 }
 
-const createUser = (e) => {
-  return { id: e.id, name: e.username, points: 50 }
+class User {
+  constructor({ id, name, bclass }) {
+    this.id = id;
+    this.name = name;
+    (this.class = bclass), (this.battlepoints = 5);
+  }
+  changeClass(bclass) {
+    this.class = bclass;
+  }
+  changeBp(num) {
+    this.battlepoints += num;
+  }
 }
+
+let userhandler = new userHandler();
+
+const handleUsers = (author) => {
+  userhandler.addUser(author);
+};
 
 const printusers = () => {
-  console.log('Users', users)
-}
+  console.log("Users");
+};
 
 const pickclass = async (args, message) => {
-  let id = message.author.id
-  let user = users.filter((x) => x.discordid == id)
-  if (user[0].class.name != classes.startclass.name) {
+  let user = userHandler.getUser(message.author.id);
+  if (user.class.name != classes.startclass.name) {
     return await message.channel.send(
-      `You already have a class, you are a **${user[0].class.name}**, please use the **!changeclass** command to change your class`,
-    )
+      `You already have a class, you are a **${user.class.name}**, please use the **!changeclass** command to change your class`
+    );
   }
-  let picked = classes[args[0].toLowerCase()]
+  let picked = classes[args[0].toLowerCase()];
 
   if (!picked) {
     return await message.channel.send(
-      'Please pick a valid class from the class list. you can view it with **!printclasses**',
-    )
+      "Please pick a valid class from the class list. you can view it with **!printclasses**"
+    );
   }
-  user[0].class = picked
+  user.changeClass(picked);
 
-  await message.channel.send(`your class is now a : **${picked.name}**`)
-}
+  await message.channel.send(`your class is now a : **${picked.name}**`);
+};
 
 const classdetails = async (args, message) => {
-  let em = require('./embeds').classEmbed
-  let id = message.author.id
+  let em = require("./embeds").classEmbed;
   if (args.length > 0) {
-    let userclass = classes[args[0].toLowerCase()]
+    let userclass = classes[args[0].toLowerCase()];
     if (!userclass) {
-      return await message.channel.send('Sorry you didnt enter a vaild class')
+      return await message.channel.send("Sorry you didnt enter a vaild class");
     }
 
-    em.setTitle(`${userclass.name}`)
-    em.attachFiles(`./gfxs/${userclass.gfx.main}`)
-    em.setThumbnail(`attachment://${userclass.gfx.main}`)
-    em.fields[0].value = userclass.str
-    em.fields[1].value = userclass.def
-    em.fields[2].value = userclass.speed
-    await message.channel.send(em)
-    em.files = []
+    em.setTitle(`${userclass.name}`);
+    em.attachFiles(`./gfxs/${userclass.gfx.main}`);
+    em.setThumbnail(`attachment://${userclass.gfx.main}`);
+    em.fields[0].value = userclass.str;
+    em.fields[1].value = userclass.def;
+    em.fields[2].value = userclass.speed;
+    await message.channel.send(em);
+    em.files = [];
   } else {
-    let userclass = getUserCLass(id)
+    let userclass = userhandler.getUser(message.author.id).class;
+    console.log("PRINT: ", userclass);
     if (userclass.name == classes.startclass.name) {
       return await message.channel.send(
-        'Sorry you have not picked a class yet. use **!pickclass classname** to select a class, or **!classdetails classname** to get information on a class.',
-      )
+        "Sorry you have not picked a class yet. use **!pickclass classname** to select a class, or **!classdetails classname** to get information on a class."
+      );
     }
-    em.setTitle(`${userclass.name}`)
-    em.attachFiles(`./gfxs/${userclass.gfx.main}`)
-    em.setThumbnail(`attachment://${userclass.gfx.main}`)
-    em.title = userclass.name
-    em.fields[0].value = userclass.str
-    em.fields[1].value = userclass.def
-    em.fields[2].value = userclass.speed
-    await message.channel.send(em)
-    em.files = []
+    em.setTitle(`${userclass.name}`);
+    em.attachFiles(`./gfxs/${userclass.gfx.main}`);
+    em.setThumbnail(`attachment://${userclass.gfx.main}`);
+    em.title = userclass.name;
+    em.fields[0].value = userclass.str;
+    em.fields[1].value = userclass.def;
+    em.fields[2].value = userclass.speed;
+    await message.channel.send(em);
+    em.files = [];
   }
-}
-
-const getUserCLass = (id) => {
-  let user = users.filter((x) => x.discordid == id)
-  let userclass = classes[user[0].class.name.toLowerCase()]
-  if (userclass) {
-    return userclass
-  } else {
-    return 'No class'
-  }
-}
+};
 
 const changeclass = async (args, message) => {
-  let id = message.author.id
-  let user = users.filter((x) => x.discordid == id)
-  let arr = ['✅', '❌']
-  let em = require('./embeds').combatEmbed
-  em.title = 'Change your class?'
+  let id = message.author.id;
+  let user = userhandler.getUser(id);
+  let arr = ["✅", "❌"];
+  let em = require("./embeds").combatEmbed;
+  em.title = "Change your class?";
   em.description =
-    'Are you sure? if you do this your battlepoints will be reset along with your level, chose ✅ to continue or ❌ to stop now.'
+    "Are you sure? if you do this your battlepoints will be reset along with your level, chose ✅ to continue or ❌ to stop now.";
   const msg = await message.channel.send({
     embed: em,
-  })
-  await arr.forEach((x) => msg.react(x))
+  });
+  await arr.forEach((x) => msg.react(x));
 
   const filter = (reaction, user) => {
     // console.log("turn: ", combat[target + "name"]);
-    return arr.includes(reaction.emoji.name) && user.id == id
-  }
+    return arr.includes(reaction.emoji.name) && user.id == id;
+  };
 
   msg
     .awaitReactions(filter, { max: 1 })
     .then((collected) => {
-      const reaction = collected.first()
-      if (reaction.emoji.name === '✅') {
-        user[0].class = classes.startclass
-        user[0].battlepoints = 0
+      const reaction = collected.first();
+      if (reaction.emoji.name === "✅") {
+        user.class = classes.startclass;
+        user.battlepoints = 0;
         message.reply(
-          "You have been reset. use **!pickclass 'className'** to chose a new class. whats done cannot be undone.",
-        )
+          "You have been reset. use **!pickclass 'className'** to chose a new class. whats done cannot be undone."
+        );
       } else {
-        message.reply('No changes were made.')
+        message.reply("No changes were made.");
       }
     })
     .catch((collected) => {
-      message.reply('there has been an err')
-    })
-}
+      message.reply("there has been an err");
+    });
+};
 
 const printme = async (args, message) => {
-  let id = message.author.id
-  let em = require('./embeds').user2Embed
-  let user = users.filter((x) => x.discordid == id)
-  em.thumbnail.url = message.author.avatarURL()
-  em.author.name = message.author.username
-  em.fields[0].value = user[0].class.name
-  em.fields[1].value = user[0].battlepoints
-  const msg = await message.channel.send({ embed: em })
-}
+  let em = require("./embeds").user2Embed;
+  let user = userhandler.getUser(message.author.id);
+  if (!user) {
+    return await message.channel.send("none found");
+  }
+  em.thumbnail.url = message.author.avatarURL();
+  em.author.name = message.author.username;
+  em.fields[0].value = user.class.name;
+  em.fields[1].value = user.battlepoints;
+  const msg = await message.channel.send({ embed: em });
+};
 
 const dic = {
   printusers,
@@ -144,8 +159,9 @@ const dic = {
   pickclass,
   classdetails,
   changeclass,
-}
+};
 
-exports.users = users
-exports.handleUsers = handleUsers
-exports.dic = dic
+exports.users = userhandler.users;
+exports.handleUsers = handleUsers;
+module.exports.userhandler = userhandler;
+exports.dic = dic;

@@ -19,6 +19,7 @@ class Enemy {
     atks = [],
     drops = [],
   }) {
+    this.hp = 10;
     this.id = id;
     this.name = name;
     this.type = type;
@@ -27,6 +28,24 @@ class Enemy {
     this.def = def;
     this.atks = atks;
     this.drops = drops;
+  }
+}
+
+class Mimic extends Enemy {
+  constructor() {
+    super({
+      id: 3,
+      name: "Mimic",
+      type: AnimalTypes.MONSTER,
+      damage: 3,
+      speed: 0,
+      def: 0,
+      atks: [skill.basic],
+      drops: [
+        new itemDictionary.copperbar.itemClass(2),
+        new itemDictionary.obsidian.itemClass(1),
+      ],
+    });
   }
 }
 
@@ -39,8 +58,10 @@ class Wolf extends Enemy {
       damage: 3,
       speed: 3,
       def: 1,
-      atks: [skill.bite, skill.swipe, skill.roar],
-      drops: [new itemDictionary.pelt.itemClass(3)],
+      atks: [skill.basic, skill.bite, skill.swipe, skill.roar],
+      drops: [
+        new itemDictionary.pelt.itemClass(Math.round(Math.random() * 2 + 1)),
+      ],
     });
   }
 }
@@ -67,6 +88,9 @@ class Bear extends Enemy {
       damage: 4,
       speed: 2,
       def: 3,
+      drops: [
+        new itemDictionary.pelt.itemClass(Math.round(Math.random() * 4 + 1)),
+      ],
     });
   }
 }
@@ -77,6 +101,7 @@ const monsters = {
   wolf: Wolf,
   bear: Bear,
   lavagolem: Lavagolem,
+  mimic: Mimic,
 };
 
 module.exports.monsters = monsters;

@@ -1,4 +1,4 @@
-const inventorys = [];
+// const inventorys = [];
 const { items, itemDictionary } = require("./items");
 const fs = require("fs");
 const { ItemTypes } = require("./items");
@@ -10,106 +10,78 @@ iventory:
     name: username,
     items:[]
 */
-
 /*
 commnads
 add,edit,delete
 */
 
-const getinv = (id) => {
-  let inv = inventorys.filter((x) => x.discordid == id);
-  if (inv.length > 0) {
-    // console.log("Get Inv: ", inv[0]);
-    return inv[0];
-  } else {
-    console.log("Inv dosent exists");
-    return false;
+class userInventory {
+  constructor({ id, name }) {
+    this.id = id;
+    this.name = name;
+    this.items = [];
   }
-};
-
-const adduserinv = (id, name) => {
-  inv = {
-    discordid: id,
-    name: name,
-    items: [],
-  };
-  inventorys.push(inv);
-};
-
-const additem = (inv, item) => {
-  let userinv = inv;
-  let i = getinvitem(userinv, item);
-  if (i) {
-    i.quantity += 1;
-  } else {
-    if (!item) {
-      return console.log("invaild item: ", item);
+  print() {
+    console.log(this);
+  }
+  addItem(item) {
+    if (this.hasItem(item)) {
+      const i = this.getItem(item);
+      i.quantity += item.quantity;
+    } else {
+      this.items.push(item);
     }
-    userinv.items.push(item);
   }
-};
-
-const removeitemfrominv = (id, i) => {
-  let inv = getinv(id);
-  inv.items = inv.items.filter((x) => x.id != i.id);
-};
-
-const getitem = (args) => {
-  switch (args[0]) {
-    case "name":
-      return itemDictionary[args[1]];
-    case "id":
-      for (i in itemDictionary) {
-        if (itemDictionary[i].id == args[1]) {
-          return itemDictionary[i];
-        }
-      }
-      break;
-    default:
-      return itemDictionary[args[0]];
+  hasItem(healingCombatPowerModifier) {
+    return this.items.some((x) => x.id === healingCombatPowerModifier.id);
   }
-};
+  getItem(healingCombatPowerModifier) {
+    const i = this.items.filter((x) => x.id === healingCombatPowerModifier.id);
+    return i[0];
+  }
+  removeItem(healingCombatPowerModifier) {
+    return (this.items = this.items.filter(
+      (x) => x.id !== healingCombatPowerModifier.id
+    ));
+  }
+}
 
-const checkinvitem = (inv, item) => {
-  //Check if an inventory has item
-  let hasitem = false;
-  inv.items.forEach((x) => {
-    if (x.name == item.name) {
-      return (hasitem = true);
+class usersInventoryHandler {
+  constructor() {
+    this.inventories = [];
+  }
+  //add edit delete
+  print() {
+    console.log(this.inventories);
+  }
+  printUserInventory(id) {
+    let ui = this.getInventory(id);
+    ui.print();
+  }
+  addInventory(id, name) {
+    if (!this.hasInventory(id)) {
+      const ui = new userInventory({
+        id: id,
+        name: name,
+      });
+      this.inventories.push(ui);
+    } else {
+      return false;
     }
-  });
-  return hasitem;
-};
-
-/**
- * Edits an item in a users inventory
- * @param {number} id A users id
- * @param {object} item Item to be edited
- * @param {string} key what value on item you want to edit
- * @param {string} value the value you want the key changed to
- */
-const editinvitem = (id, item, key, value) => {
-  let inv = getinv(id);
-  item = getinvitem(inv, item);
-  item[key] = value;
-};
-
-/**
- * Finds an item in a users inventory, returns the item, or returns false
- * @param {object} inv A users inventory
- * @param {object} i Either an Item instance or a ItemDictionaryEntry instance that we are going to look for by name
- */
-const getinvitem = (inv, i) => {
-  // Get an item in a inventory
-  let item = inv.items.filter((x) => x.name == i.name);
-  if (item.length > 0) {
-    // console.log("GetinvItem found: ", item[0]);
-    return item[0];
-  } else {
-    // console.log("Get Item not found in inv");
-    return false;
   }
-};
+  hasInventory(id) {
+    return this.inventories.some((x) => x.id === id);
+  }
+  getInventory(id) {
+    const i = this.inventories.find((x) => x.id === id);
+    return i;
+  }
+  removeInventory(id) {
+    this.inventories = this.inventories.filter((x) => x.id !== id);
+  }
+}
+
+const inventorys = new usersInventoryHandler();
 
 const itemEmbed = (item) => {
   let emn = require("../embeds");
@@ -180,12 +152,7 @@ const craft = (args, message) => {
 };
 
 const addinv = (args, message) => {
-  inv = {
-    discordid: message.author.id,
-    name: message.author.username,
-    items: [],
-  };
-  inventorys.push(inv);
+  inventorys.addInventory(message.author.id, message.author.username);
   message.channel.send("it has be done");
 };
 
@@ -218,10 +185,9 @@ const item = (args, message) => {
 };
 
 const edititem = (args, message) => {
-  let inv = getinv(message.author.id);
-  let i = getitem(args);
-  let item = getinvitem(inv, new i.itemClass());
-  if (!item) {
+  let inv = inventorys.getInventory(message.author.id);
+  let item = new itemDictionary[args[0]].itemClass();
+  if (!inv.hasItem(item)) {
     return message.channel.send("You do not have this item");
   }
   if (args.length >= 4) {
@@ -238,40 +204,36 @@ const removeinvitem = (args, message) => {
 };
 
 const printmyinv = (args, message) => {
-  let inv = getinv(message.author.id);
-  console.log("your inv: ", inv);
+  inventorys.printUserInventory(message.author.id);
+  const inven = inventorys.getInventory(message.author.id);
   let emn = require("../embeds");
   let em = emn.invEmbed;
+  em.attachFiles("./gfxs/Inventoryicon.png");
+  em.setThumbnail("attachment://Inventoryicon.png");
   let msg = "";
-  inv.items.forEach((x) => (msg += ` ${x.name} x${x.quantity}\n`));
+  inven.items.forEach((x) => (msg += ` ${x.name} x${x.quantity}\n`));
   em.fields[0].value = `<@!${message.author.id}>`;
   em.fields[1].value = msg;
   message.channel.send(em);
 };
 
 const giveitem = (args, message) => {
-  let userinv = getinv(message.author.id);
-  let item = getitem(args);
-  let i = item ? getinvitem(userinv, new item.itemClass()) : false;
-  if (!item) {
-    return message.channel.send("no item was found.");
+  let userinv = inventorys.getInventory(message.author.id);
+  let item = new itemDictionary[args[0]].itemClass();
+  if (!userinv.hasItem(item)) {
+    userinv.removeItem(item);
   }
-  if (i) {
-    i.quantity += 1;
-  } else {
-    item = new item.itemClass();
-
-    args.forEach((x, i) => {
-      if (i != 0) {
-        let n = i;
-        n += 1;
-        if (n % 2 === 0) {
-          item[x] = args[i + 1];
-        }
+  args.forEach((x, i) => {
+    if (i != 0) {
+      let n = i;
+      n += 1;
+      if (n % 2 === 0) {
+        item[x] = args[i + 1];
       }
-    });
-    userinv.items.push(item);
-  }
+    }
+  });
+  userinv.addItem(item);
+  console.log("Given Item: ", item);
   // console.log("pushed : ", items[args[0]]);
   message.channel.send(`Given item: **${item.name}** `);
 };
@@ -281,7 +243,7 @@ const printinv = (args, message) => {
 };
 
 const printinvitems = (args, message) => {
-  console.log("Item: ", inventorys[0].items);
+  console.log("Item: ", inventorys);
 };
 
 const dic = {
@@ -289,17 +251,12 @@ const dic = {
   printinv,
   printinvitems,
   giveitem,
-  getinv,
   printmyinv,
-  getinvitem,
   item,
-  removeitemfrominv,
   removeinvitem,
-  editinvitem,
   edititem,
   craft,
-  adduserinv,
-  additem,
 };
 
-module.exports = dic;
+module.exports.dic = dic;
+module.exports.inventorys = inventorys;

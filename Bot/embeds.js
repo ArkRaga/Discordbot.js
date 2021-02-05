@@ -22,6 +22,15 @@ const userEmbed = {
   ],
 };
 
+const rpgCombatEndEmbed = new Discord.MessageEmbed()
+  .setColor()
+  .setTitle()
+  .setDescription();
+
+const rpgComabtEmbed = new Discord.MessageEmbed()
+  .setTitle("title")
+  .setDescription("des");
+
 const questBoardEmbed = new Discord.MessageEmbed()
   .setTitle("Quest Board")
   .setDescription("Here are the available quest you can take")
@@ -47,6 +56,8 @@ const classEmbed = new Discord.MessageEmbed()
       inline: false,
     }
   );
+
+const basicEmbed = new Discord.MessageEmbed().setTitle();
 
 const combatEmbed = {
   color: 0x0099ff,
@@ -209,6 +220,9 @@ const dic = {
   invEmbed,
   qstEmbed,
   questBoardEmbed,
+  rpgComabtEmbed,
+  rpgCombatEndEmbed,
+  basicEmbed,
 };
 
 module.exports = dic;
