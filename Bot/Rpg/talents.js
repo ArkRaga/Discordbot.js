@@ -9,7 +9,7 @@ class Talent {
 
 class HealOnTurn extends Talent {
   constructor() {
-    super({ id: 0, name: "warm Light", desc: "Heal 1 hp every turn." });
+    super({ id: 0, name: "warm Light", desc: "Heal 1 hp every 3 turns." });
   }
   doTalent(combat, p1) {
     let n = combat.turn % 3;

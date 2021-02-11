@@ -1,9 +1,17 @@
-const arr = [3, 20, 15, 94, 6];
 
-arr.forEach((x) => {
-  console.log("X", x);
-  let n = x % 3;
-  if (n == 0) {
-    console.log("yes: ", x % 3);
-  }
-});
+
+
+your romm blank:
+  exits are :
+   exit 1 exit 2 exit 3
+ please type !goto [exit 2]
+
+
+ get rooom your at
+  get the exits
+    list them out
+
+
+  !goto exit 2
+    get cur rooms exit 2
+        do the top all over again

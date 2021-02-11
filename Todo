@@ -16,34 +16,16 @@ Battle Royal:
 
 Pvp Combat:
     ☐ Needs rebalanceing
-    ☐ handleing the formual for dmg
+    ☐ handleing the formuala for dmg
     ☐ people who start first have an advantage???
 
-Questing system:
-    ☐ Type of quest
-    ☐ sudo quest log
-    
-    commands:
-        ☐ !accept
-        ☐ !quest
+rpg Combat:
+    ☐ need to hunt specific monsters
+    ☐ add the items for hunting speficif monsters
+    ☐ make more skills
+    ☐ make more classes 
+    ☐ make more items
+    ☐ make more monsters
 
-
-Crafting system:
-    ✔ Materials @done(21-01-23 21:37)
-        ✔ Add,edit,delete @done(21-01-23 21:35)
-        ✔ material stacking @done(21-01-23 21:35)
-    ☐ items
-        ✔ crafting item @done(21-01-23 21:35)
-        ☐ removeing item(turning in)
-    ☐ crafting book
-    ✔ player iventory @done(21-01-23 21:36)
-    commands:
-        ✔ print player iventory @done(21-01-23 21:36)
-        ✔ print material in inventory @done(21-01-23 21:36)
-        ✔ look up material @done(21-01-23 21:36)
-        ✔ look up item @done(21-01-23 21:36)
-        ☐ look up quest/item to create
-
-
-monster drops:
-    ☐ fix the issue with monster drops in combat
+Dungeons:
+    ☐ start brainstorming how thisll work

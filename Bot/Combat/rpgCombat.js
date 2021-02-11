@@ -2,6 +2,10 @@ const { itemDictionary } = require("../Rpg/items");
 const { monsters } = require("../Rpg/monsters");
 const { inventorys } = require("../Rpg/inventory");
 const { userhandler } = require("../userHandler");
+const {
+  dungeonCommands,
+  dungeonHandler,
+} = require("../Rpg/Dungeons/dungeonHandler");
 
 const actions = {
   START: "start",
@@ -70,7 +74,8 @@ class Player {
   constructor({ id, name, bclass }) {
     this.discordId = id;
     this.name = name;
-    this.hp = 10;
+    this.maxHp = 10;
+    this.hp = this.maxHp;
     this.skill = "swordstrike";
     this.class = bclass;
   }
@@ -115,31 +120,40 @@ class CombatHandler {
 
 const combats = new CombatHandler();
 
-const huntmonster = async (args, message) => {
-  const chestChance = Math.round(Math.random() * 100 + 0) > 80 ? true : false;
-  // const chestChance = true;
+const setUpCombat = (message, enemy) => {
   ids += 1;
   const p = new Player({
     id: message.author.id,
     name: message.author.username,
     bclass: userhandler.getUser(message.author.id).class,
   });
-  const en = new monsters.bear();
+  const en = new monsters[enemy]();
   const c = new Combat({
     id: ids,
     player: p,
     enemy: en,
   });
+  return c;
+};
+
+const huntmonster = async (args, message, dun = false) => {
+  const chestChance = Math.round(Math.random() * 100 + 0) > 80 ? true : false;
+  // const chestChance = true;
+  let enemy = args[1] ? args[1] : "bear";
+  const c = setUpCombat(message, enemy);
+  if (dun) {
+    c.dun = dun;
+  }
   if (chestChance) {
     return foundChest(args, c, message);
   }
   if (combats.addcombat(c)) {
     let emn = require("../embeds");
-    let em = emn.basicEmbed;
+    let em = Object.create(emn.basicEmbed);
     em.files = [];
-    em.setTitle(`A wild  ${en.name} has appeard `);
-    em.attachFiles(`./gfxs/${en.name}.png`).setImage(
-      `attachment://${en.name}.png`
+    em.setTitle(`A wild  ${c.enemy.name} has appeard `);
+    em.attachFiles(`./gfxs/${c.enemy.name}.png`).setImage(
+      `attachment://${c.enemy.name}.png`
     );
     em.setColor("03fcca");
     await message.channel.send(em);
@@ -152,7 +166,7 @@ const huntmonster = async (args, message) => {
       // return await doRpgcombat(c, message);
     } else {
       let emn = require("../embeds");
-      let em = emn.rpgComabtEmbed;
+      let em = Object.create(emn.rpgComabtEmbed);
       em.files = [];
       em.setTitle("please type __!attacks__ followed by 4 actions: ");
       em.setColor("ffce08");
@@ -230,7 +244,10 @@ const foundChest = async (args, c, message) => {
   let msg2 = `${item1.name} x${item1.quantity}\n`;
   let msg3 = `${item2.name} x${item2.quantity}\n`;
   em.setDescription(msg1 + msg2 + msg3);
-  message.channel.send(em);
+  if (c.dun) {
+    await message.channel.send(em);
+    return await dungeonCommands.onRoomDone(message);
+  }
 };
 
 // const huntmonster2 = (args, message) => {
@@ -306,7 +323,7 @@ const attacks = (args, message) => {
 
 const doAftercombat = async (combat, message) => {
   const emn = require("../embeds");
-  const em = emn.rpgCombatEndEmbed;
+  const em = Object.create(emn.rpgCombatEndEmbed);
   em.setColor("F8E71C");
   combat.checkHp();
 
@@ -323,17 +340,23 @@ const doAftercombat = async (combat, message) => {
         inven.addItem(x);
       });
       em.setDescription(msg1);
+      if (combat.dun) {
+        await message.channel.send(em);
+        return await dungeonCommands.onRoomDone(message);
+      }
       return await message.channel.send(em);
     } else {
       em.setColor("D0021B");
       em.attachFiles(`./gfxs/Rip.png`).setImage(`attachment://Rip.png`);
       em.setTitle(`the ${combat.winner} has won the fight`);
       em.setDescription("Come back stronger and Win!");
+      // if in a dungeon remove from dungeon
+      dungeonHandler.deleteDungeon(message.author.id);
       return await message.channel.send(em);
     }
   }
   if (combat.player.class.talent.doTalent(combat, "player")) {
-    message.channel.send("Your class talent heals you for 1");
+    message.channel.send("**Your class talent heals you for 1**");
   }
   combat.changeTurn();
   combat.playerDamage = 0;
@@ -465,20 +488,17 @@ const getcombat = () => {
   inventorys.print();
 };
 
-/*
-hunt(args,message){
-    let p = new Player(message.author.id,message.author.username)
-    let e = new monster.wolf()
-    let c = new combat(id,p,e)
-    combatHandler.addcombat(c)
-}
-*/
+const sayhi = () => {
+  console.log("HI");
+};
 
 const dic = {
   huntmonster,
   getmycombat,
   getcombat,
   attacks,
+  sayhi,
 };
 
-module.exports = dic;
+module.exports.dic = dic;
+module.exports.player = Player;

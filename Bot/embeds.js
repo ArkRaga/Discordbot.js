@@ -131,32 +131,46 @@ const qstEmbed = new Discord.MessageEmbed().addFields(
     value: "text",
   }
 );
+const crafteditemEmbed = new Discord.MessageEmbed().addFields(
+  {
+    name: "Name",
+    value: "🗡️ to attack or 🛡️ to defend",
+    inline: true,
+  },
+  {
+    name: "Type",
+    value: "undefined",
+    inline: false,
+  },
+  {
+    name: "Required Materials",
+    value: "undefined",
+    inline: false,
+  },
+  {
+    name: "Dropped by:",
+    value: "text",
+    inline: false,
+  }
+);
 
-const itemEmbed = new Discord.MessageEmbed()
-  .attachFiles("./gfxs/Rick.png")
-  .setThumbnail("attachment://Rick.png")
-  .addFields(
-    {
-      name: "Id",
-      value: "000",
-      inline: true,
-    },
-    {
-      name: "Name",
-      value: "🗡️ to attack or 🛡️ to defend",
-      inline: true,
-    },
-    {
-      name: "Type",
-      value: "undefined",
-      inline: false,
-    },
-    {
-      name: "Description",
-      value: "text",
-      inline: false,
-    }
-  );
+const itemEmbed = new Discord.MessageEmbed().addFields(
+  {
+    name: "Name",
+    value: "🗡️ to attack or 🛡️ to defend",
+    inline: true,
+  },
+  {
+    name: "Type",
+    value: "undefined",
+    inline: false,
+  },
+  {
+    name: "Dropped by:",
+    value: "text",
+    inline: false,
+  }
+);
 
 const combat2Embed = {
   title: "Failed ",
@@ -223,6 +237,7 @@ const dic = {
   rpgComabtEmbed,
   rpgCombatEndEmbed,
   basicEmbed,
+  crafteditemEmbed,
 };
 
 module.exports = dic;

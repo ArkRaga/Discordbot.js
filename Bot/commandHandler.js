@@ -4,7 +4,8 @@ const combatReactionCommands = require("./Combat/combatReactHandler");
 const userCommands = require("./userHandler").dic;
 const inventoryCommands = require("./Rpg/inventory").dic;
 const questSystemHandler = require("./Rpg/questHandler");
-const rpgcombat = require("./Combat/rpgCombat");
+const { rpgcombat } = require("./Combat/rpgCombat");
+const { dungeonCommands } = require("./Rpg/Dungeons/dungeonHandler");
 
 const commands = {
   ...genCommands,
@@ -13,6 +14,7 @@ const commands = {
   ...inventoryCommands,
   ...questSystemHandler,
   ...rpgcombat,
+  ...dungeonCommands,
 };
 
 const commandHandler = async (command, args, message) => {

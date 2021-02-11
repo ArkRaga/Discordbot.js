@@ -67,7 +67,6 @@ const createqstlog = (args, message) => {
     message.channel.send("Quest log already exists.");
   } else {
     questlogs.addQuestlog(message.author.id, message.author.username);
-    console.log("Added quest log: ", questlogs.getQuestlog(message.author.id));
     message.channel.send("Quest log has been created.");
   }
 };
@@ -76,7 +75,7 @@ const myqstlog = (args, message) => {
   let log = questlogs.getQuestlog(message.author.id);
   if (log) {
     let emn = require("../embeds");
-    let em = emn.invEmbed;
+    let em = Object.create(emn.invEmbed);
     em.files = [];
     em.attachFiles("./gfxs/Questlogicon.png");
     em.setThumbnail("attachment://Questlogicon.png");
@@ -122,9 +121,62 @@ const giveqst = (args, message) => {
   if (!qst) {
     return message.channel.send("Not valid quest");
   }
+  if (!questlogs.hasQuestlog(message.author.id)) {
+    questlogs.addQuestlog(message.author.id, message.author.username);
+  }
   questlogs.getQuestlog(message.author.id).addQuest(qst);
-  console.log("Pushed qst: ", qst);
   message.channel.send(`Added ${qst.name} to your quest log sir.`);
+};
+
+const turnin = (args, message) => {
+  const qstlog = questlogs.getQuestlog(message.author.id);
+
+  const { inventorys } = require("./inventory");
+  const inv = inventorys.getInventory(message.author.id);
+  if (!qstlog || qstlog.quests.length <= 0) {
+    return message.channel.send("you dont have any quest");
+  }
+  if (!inv || inv.items <= 0) {
+    return message.channel.send("you have no items");
+  }
+  let qst;
+  if (quests.hasOwnProperty(args[0])) {
+    qst = new quests[args[0]]();
+  } else {
+    return message.channel.send("Quest does not exists");
+  }
+  let canCom = true;
+
+  if (qstlog.hasQuest(qst)) {
+    qst.reqs.forEach((x) => {
+      if (!inv.hasItem(x)) {
+        canCom = false;
+        return message.channel.send("You do not have the required Item");
+      }
+      if (inv.getItem(x).quantity < x.quantity) {
+        canCom = false;
+        return message.channel.send("You do not have the quantity required");
+      }
+    });
+  } else {
+    return message.channel.send("You do not have this quest");
+  }
+  if (canCom) {
+    qst.reqs.forEach((x) => {
+      inv.getItem(x).quantity -= x.quantity;
+      if (inv.getItem(x).quantity === 0) {
+        inv.removeItem(x);
+      }
+    });
+    let msg = "";
+    qst.rewards.forEach((x) => {
+      msg += ` ${x.name}\n`;
+      inv.addItem(x);
+    });
+    return message.channel.send(
+      `You have turned in the quest: ${qst.name} and been given: ${msg} `
+    );
+  }
 };
 
 const qstboard = (args, message) => {
@@ -140,15 +192,14 @@ const qstboard = (args, message) => {
       value: `${q.desc} \n Reward: ${q.rewards[0].name} x${q.rewards[0].quantity}`,
     });
   }
-  em.setFooter("use !giveqst questname to accept the quest");
+  em.setFooter("use !acceptqst questname to accept the quest");
   message.channel.send(em);
 };
 
 const getQst = (qst) => {
-  let qs = new quests[qst]();
+  let qs = quests.hasOwnProperty(qst);
   if (qs) {
-    console.log("Qst: ", qs);
-    return qs;
+    return new quests[qst]();
   } else {
     console.log("No qst found");
     return false;
@@ -160,9 +211,10 @@ const dic = {
   createqstlog,
   myqstlog,
   printqst,
-  giveqst,
+  acceptqst: giveqst,
   quest,
   qstboard,
+  turnin,
 };
 
 module.exports = dic;

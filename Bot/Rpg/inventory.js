@@ -85,8 +85,27 @@ const inventorys = new usersInventoryHandler();
 
 const itemEmbed = (item) => {
   let emn = require("../embeds");
-  let em = emn.itemEmbed;
-  em.files = [];
+  let em;
+  // em.files = [];
+  // em.fields = [];
+
+  if (item.type == ItemTypes.MATERIAL) {
+    em = Object.create(emn.itemEmbed);
+    em.fields[0].value = item.name;
+    em.fields[1].value = "Material";
+    em.fields[2].value = getDropBy(item);
+  }
+  if (item.type == ItemTypes.CRAFTEDITEM) {
+    em = Object.create(emn.crafteditemEmbed);
+    em.fields[0].value = item.name;
+    em.fields[1].value = "Crafted item";
+    let m = "";
+    item.mats.forEach((x) => (m += ` **${x.name}** x${x.quantity}, \n`));
+    em.fields[2].value = m;
+    em.fields[2].inline = true;
+    em.fields[3].value = getDropBy(item);
+    em.fields[3].inline = true;
+  }
   if (fs.existsSync(`./gfxs/${item.name}.png`)) {
     em.attachFiles(`./gfxs/${item.name}.png`);
     em.setThumbnail(`attachment://${item.name}.png`);
@@ -94,45 +113,43 @@ const itemEmbed = (item) => {
     em.attachFiles("./gfxs/testItem.png");
     em.setThumbnail("attachment://testItem.png");
   }
-  if (item.type == ItemTypes.MATERIAL) {
-    em.fields[0].value = item.id;
-    em.fields[1].value = item.name;
-    em.fields[2].value = "Material";
-    em.fields[3].name = "Quality";
-    em.fields[3].value = item.quality; // Im the number in the enum, you need to implement something to look up quality names :D
-  }
-  if (item.type == ItemTypes.CRAFTEDITEM) {
-    em.fields[0].value = item.id;
-    em.fields[1].value = item.name;
-    em.fields[2].value = "Crafted item";
-    em.fields[3].name = "Required Mats:";
-    let m = "";
-    item.mats.forEach((x) => (m += ` **${x.name}** x${x.quantity}, \n`));
-    em.fields[3].value = m;
-  }
   return em;
+};
+
+const getDropBy = (item) => {
+  const { monsters } = require("./monsters");
+  let hasMe = "";
+  for (i in monsters) {
+    const t = new monsters[i]();
+
+    t.drops.forEach((x) => {
+      if (x.id === item.id) {
+        hasMe += ` ${t.name}\n`;
+      }
+    });
+  }
+  if (hasMe === "") {
+    hasMe = "nothing";
+  }
+  return hasMe;
 };
 
 /*/////
     Commnads
  ////*/
 const craft = (args, message) => {
-  let i = getitem(args);
-  let item = new i.itemClass();
-  console.log("Craft Item: ", item);
-  let inv = getinv(message.author.id);
-  console.log("Craft User inv: ", inv);
+  let item = new itemDictionary[args[0]].itemClass();
+  let inv = inventorys.getInventory(message.author.id);
   let canCraft = true;
   if (!item) {
     return message.channel.send("invalid Crafting item");
   }
-  // console.log("craft item.mats", Array.isArray(item.mats));
   item.mats.forEach((ele) => {
-    if (!checkinvitem(inv, ele)) {
+    if (!inv.hasItem(ele)) {
       message.channel.send("you do not have the material required");
       return (canCraft = false);
     }
-    if (ele.quantity > getinvitem(inv, ele).quantity) {
+    if (ele.quantity > inv.getItem(ele).quantity) {
       message.channel.send(` you do not have enough of **${ele.name}**`);
       return (canCraft = false);
     }
@@ -141,13 +158,13 @@ const craft = (args, message) => {
     return;
   }
   item.mats.forEach((ele) => {
-    if (getinvitem(inv, ele).quantity > ele.quantity) {
-      getinvitem(inv, ele).quantity -= ele.quantity;
+    if (inv.getItem(ele).quantity > ele.quantity) {
+      inv.getItem(ele).quantity -= ele.quantity;
     } else {
-      removeitemfrominv(message.author.id, ele);
+      inv.removeItem(ele);
     }
   });
-  inv.items.push(item);
+  inv.addItem(item);
   message.channel.send("suscessfully crafted: ", item.name);
 };
 
@@ -207,19 +224,27 @@ const printmyinv = (args, message) => {
   inventorys.printUserInventory(message.author.id);
   const inven = inventorys.getInventory(message.author.id);
   let emn = require("../embeds");
-  let em = emn.invEmbed;
+  let em = Object.create(emn.invEmbed);
   em.attachFiles("./gfxs/Inventoryicon.png");
   em.setThumbnail("attachment://Inventoryicon.png");
   let msg = "";
+  if (inven.items.length === 0) {
+    msg = " Empty ";
+  }
   inven.items.forEach((x) => (msg += ` ${x.name} x${x.quantity}\n`));
   em.fields[0].value = `<@!${message.author.id}>`;
+
   em.fields[1].value = msg;
   message.channel.send(em);
 };
 
 const giveitem = (args, message) => {
-  let userinv = inventorys.getInventory(message.author.id);
+  let userinv;
   let item = new itemDictionary[args[0]].itemClass();
+  if (!inventorys.getInventory(message.author.id)) {
+    inventorys.addInventory(message.author.id, message.author.username);
+  }
+  userinv = inventorys.getInventory(message.author.id);
   if (!userinv.hasItem(item)) {
     userinv.removeItem(item);
   }
@@ -233,7 +258,6 @@ const giveitem = (args, message) => {
     }
   });
   userinv.addItem(item);
-  console.log("Given Item: ", item);
   // console.log("pushed : ", items[args[0]]);
   message.channel.send(`Given item: **${item.name}** `);
 };

@@ -92,36 +92,38 @@ const playchess = async (args, message) => {
 
 const sayhi = async (args, message) => {
   let emn = require("./embeds");
-  let em = emn.combatEmbed;
-  em.description = "just click something";
+  let em = emn.rpgCombatEndEmbed;
+  em.description = "This is the descrption";
+  em.title = "This is the title";
+  em.color = "a83295";
 
-  let arr = ["🗡️", "🛡️", "🔥", "❤️", "📖"];
+  // let arr = ["🗡️", "🛡️", "🔥", "❤️", "📖"];
   const msg = await message.channel.send({
     embed: em,
   });
-  await arr.forEach((x) => msg.react(x));
+  // await arr.forEach((x) => msg.react(x));
 
-  const filter = (reaction, user) => {
-    // console.log("turn: ", combat[target + "name"]);
-    return arr.includes(reaction.emoji.name) && user.id == message.author.id;
-  };
+  // const filter = (reaction, user) => {
+  //   // console.log("turn: ", combat[target + "name"]);
+  //   return arr.includes(reaction.emoji.name) && user.id == message.author.id;
+  // };
 
-  msg
-    .awaitReactions(filter, { max: 4 })
-    .then((collected) => {
-      console.log("Size: ", collected.size);
-      collected.each((x) => {
-        if (x.emoji.name === arr[0]) {
-          message.reply("sword");
-        } else {
-          message.reply("notsword");
-        }
-        collected.users.remove(message.author.id);
-      });
-    })
-    .catch((collected) => {
-      message.reply("there has been an err in create embed");
-    });
+  // msg
+  //   .awaitReactions(filter, { max: 4 })
+  //   .then((collected) => {
+  //     console.log("Size: ", collected.size);
+  //     collected.each((x) => {
+  //       if (x.emoji.name === arr[0]) {
+  //         message.reply("sword");
+  //       } else {
+  //         message.reply("notsword");
+  //       }
+  //       collected.users.remove(message.author.id);
+  //     });
+  //   })
+  //   .catch((collected) => {
+  //     message.reply("there has been an err in create embed");
+  //   });
 };
 
 const closeRoyal = (args, message) => {
