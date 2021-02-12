@@ -1,57 +1,88 @@
 const skill = require("./skills");
 const { talents } = require("./talents");
 
-const werewolf = {
-  name: "WereWolf",
-  str: 3,
-  def: 1,
-  speed: 4,
-  mod: 25 + 4,
-  atks: [skill.roar, skill.swordstrike],
-  gfx: { main: "Werewolf.png" },
-};
+//add in quips
 
-const knight = {
-  name: "Knight",
-  str: 2,
-  def: 4,
-  speed: 2,
-  mod: 25 + 4,
-  atks: [skill.roar, skill.swordstrike],
-  gfx: { main: "Knight.png" },
-};
+class CharClass {
+  constructor({
+    name,
+    attacks,
+    damage = 0,
+    gfx = false,
+    quip = false,
+    talent = false,
+  }) {
+    this.name = name;
+    this.attacks = attacks;
+    this.damage = damage;
+    this.gfx = gfx;
+    this.quip = quip;
+    this.talent = talent;
+  }
+}
 
-const priest = {
-  name: "Priest",
-  str: 1,
-  def: 2,
-  speed: 5,
-  mod: 25 + 5,
-  atks: [skill.roar, skill.swordstrike],
-  gfx: { main: "Priest.png" },
-};
+class Werewolf extends CharClass {
+  constructor() {
+    super({
+      name: "werewolf",
+      attacks: [skill.roar, skill.swordstrike],
+      damage: 3,
+      gfx: { main: "Werewolf.png" },
+      quip: "The moon is full tonight.",
+    });
+  }
+}
 
-const startclass = {
-  name: "StartClass",
-  str: 0,
-  def: 0,
-  talent: new talents.HealOnTurn(),
-  speed: 0,
-  mod: 0,
-};
+class Knight extends CharClass {
+  constructor() {
+    super({
+      name: "Knight",
+      attacks: [skill.roar, skill.swordstrike],
+      damage: 3,
+      gfx: { main: "Knight.png" },
+      quip: "For the Queen",
+    });
+  }
+}
+
+class Priest extends CharClass {
+  constructor() {
+    super({
+      name: "Priest",
+      attacks: [skill.roar, skill.swordstrike],
+      damage: 3,
+      gfx: { main: "Priest.png" },
+      quip: "The light has shown us the true victor.",
+      talent: new talents.HealOnTurn(),
+    });
+  }
+}
+
+class Startclass extends CharClass {
+  constructor() {
+    super({
+      name: "StartClass",
+      attacks: [skill.roar, skill.swordstrike],
+      damage: 3,
+      gfx: { main: "StartClass.png" },
+      quip: "I shouldnt even be here",
+      talent: new talents.HealOnTurn(),
+    });
+  }
+}
 
 const dic = {
-  knight,
-  startclass,
+  knight: Knight,
+  startclass: Startclass,
   mage: "Mage",
   rogue: "Rogue",
-  werewolf,
+  werewolf: Werewolf,
   unicorn: "Unicorn",
   paladin: "Paladin",
   ranger: "Ranger",
   scavenger: "Scavenger",
   necromancer: "NecroMancer",
-  priest,
+  priest: Priest,
   vampire: "Vampire",
   amazon: "Amazon",
   ninja: "Ninja",
@@ -69,6 +100,11 @@ const dic = {
   mermaid: "Mermaid",
   bard: "Bard",
   leper: "Leper",
+  barbarian: "Barabian",
+  brute: "Brute",
+  ghoul: "Ghoul",
+  undead: "Undead",
+  houndmaster: "HoundMaster",
 };
 
 module.exports = dic;

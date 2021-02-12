@@ -253,7 +253,7 @@ const giveitem = (args, message) => {
       let n = i;
       n += 1;
       if (n % 2 === 0) {
-        item[x] = args[i + 1];
+        item[x] = parseInt(args[i + 1]);
       }
     }
   });

@@ -16,6 +16,10 @@ const ItemTypes = {
 
 const ItemQuality = {
   NORMAL: "Normal",
+  GOOD: "Good",
+  GREAT: "Great",
+  PERFECT: "Perfect",
+  MARVELLOUS: "Marvellous",
   EPIC: "Epic",
   RARE: "rare",
 };
@@ -116,6 +120,32 @@ class IronBar extends CraftedItem {
   }
 }
 
+class GoodPelt extends CraftedItem {
+  constructor(quantity) {
+    super({ id: 12, name: "Good Pelt", quantity, mats: [new Pelt(3)] });
+  }
+}
+class GreatPelt extends CraftedItem {
+  constructor(quantity) {
+    super({ id: 13, name: "Great Pelt", quantity, mats: [new GoodPelt(3)] });
+  }
+}
+class PerfectPelt extends CraftedItem {
+  constructor(quantity) {
+    super({ id: 14, name: "Perfect Pelt", quantity, mats: [new GreatPelt(3)] });
+  }
+}
+class MarvellousPelt extends CraftedItem {
+  constructor(quantity) {
+    super({
+      id: 15,
+      name: "Marvellous Pelt",
+      quantity,
+      mats: [new PerfectPelt(3)],
+    });
+  }
+}
+
 class FurArmor extends CraftedItem {
   constructor() {
     super({
@@ -204,6 +234,11 @@ const itemDictionary = {
     itemClass: IronBar,
     name: "Iron Bar",
     id: 11,
+  }),
+  goodpelt: new ItemDictionaryEntry({
+    itemClass: GoodPelt,
+    name: "Good Pelt",
+    id: 12,
   }),
 };
 

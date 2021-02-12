@@ -500,5 +500,5 @@ const dic = {
   sayhi,
 };
 
-module.exports.dic = dic;
+module.exports.rpgcombat = dic;
 module.exports.player = Player;

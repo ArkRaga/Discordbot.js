@@ -11,7 +11,7 @@ class userHandler {
         new User({
           id: author.id,
           name: author.username,
-          bclass: classes.startclass,
+          bclass: new classes.startclass(),
         })
       );
     }
