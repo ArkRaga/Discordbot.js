@@ -13,7 +13,7 @@ class CharClass {
     talent = false,
   }) {
     this.name = name;
-    this.attacks = attacks;
+    this.attacks = [new skill.Basic(), new skill.Heal(), ...attacks];
     this.damage = damage;
     this.gfx = gfx;
     this.quip = quip;
@@ -25,7 +25,7 @@ class Werewolf extends CharClass {
   constructor() {
     super({
       name: "werewolf",
-      attacks: [skill.roar, skill.swordstrike],
+      attacks: [new skill.Roar(), new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "Werewolf.png" },
       quip: "The moon is full tonight.",
@@ -37,7 +37,7 @@ class Knight extends CharClass {
   constructor() {
     super({
       name: "Knight",
-      attacks: [skill.roar, skill.swordstrike],
+      attacks: [new skill.Roar(), new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "Knight.png" },
       quip: "For the Queen",
@@ -49,7 +49,7 @@ class Priest extends CharClass {
   constructor() {
     super({
       name: "Priest",
-      attacks: [skill.roar, skill.swordstrike],
+      attacks: [new skill.Roar(), new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "Priest.png" },
       quip: "The light has shown us the true victor.",
@@ -62,7 +62,7 @@ class Startclass extends CharClass {
   constructor() {
     super({
       name: "StartClass",
-      attacks: [skill.roar, skill.swordstrike],
+      attacks: [new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "StartClass.png" },
       quip: "I shouldnt even be here",

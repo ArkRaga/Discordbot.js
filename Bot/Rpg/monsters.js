@@ -16,7 +16,7 @@ class Enemy {
     damage = 1,
     speed = 1,
     def = 1,
-    atks = [],
+    attacks = [],
     drops = [],
   }) {
     this.hp = 10;
@@ -26,7 +26,7 @@ class Enemy {
     this.dmg = damage;
     this.speed = speed;
     this.def = def;
-    this.atks = atks;
+    this.attacks = [new skill.Basic(), new skill.Heal(), ...attacks];
     this.drops = drops;
   }
 }
@@ -40,7 +40,7 @@ class Mimic extends Enemy {
       damage: 3,
       speed: 0,
       def: 0,
-      atks: [skill.basic],
+      attacks: [skill.basic],
       drops: [
         new itemDictionary.copperbar.itemClass(2),
         new itemDictionary.obsidian.itemClass(1),
@@ -58,7 +58,12 @@ class Wolf extends Enemy {
       damage: 3,
       speed: 3,
       def: 1,
-      atks: [skill.basic, skill.bite, skill.swipe, skill.roar],
+      attacks: [
+        new skill.Basic(),
+        new skill.Bite(),
+        new skill.Swipe(),
+        new skill.Roar(),
+      ],
       drops: [
         new itemDictionary.pelt.itemClass(Math.round(Math.random() * 2 + 1)),
       ],
@@ -88,6 +93,7 @@ class Bear extends Enemy {
       damage: 4,
       speed: 2,
       def: 3,
+      attacks: [new skill.Swipe(), new skill.Roar()],
       drops: [
         new itemDictionary.pelt.itemClass(Math.round(Math.random() * 4 + 1)),
       ],

@@ -6,6 +6,8 @@ const {
   dungeonCommands,
   dungeonHandler,
 } = require("../Rpg/Dungeons/dungeonHandler");
+const Discord = require("discord.js");
+const skills = require("../Rpg/skills");
 
 const actions = {
   START: "start",
@@ -20,6 +22,17 @@ const battleActions = {
   3: "def",
 };
 
+const playerActions = {
+  0: "attack",
+  1: "defend",
+  2: "skill",
+};
+
+const enemyActions = {
+  0: "attack",
+  1: "skill",
+};
+
 let ids = 0;
 
 class Combat {
@@ -30,9 +43,7 @@ class Combat {
     this.inputs = false;
     this.lastaction = actions.START;
     this.player = player;
-    this.playerDamage = 0;
     this.enemy = enemy;
-    this.enemyDamage = 0;
     this.winner = false;
     this.atk = false;
     this.heal = false;
@@ -57,16 +68,19 @@ class Combat {
   }
   checkHp() {
     if (this.player.hp <= 0 || this.enemy.hp <= 0) {
+      //   console.log("L51- a Winner has been chosen");
       if (this.player.hp <= 0 && this.enemy.hp <= 0) {
-        return (this.winner =
-          this.player.hp > this.enemy.hp ? this.player.name : this.enemy.name);
+        this.winner =
+          this.player.hp > this.enemy.hp ? this.player.name : this.enemy.name;
       }
       if (this.player.hp <= 0) {
         this.winner = this.enemy.name;
       } else {
         this.winner = this.player.name;
       }
+      return false;
     }
+    return true;
   }
 }
 
@@ -76,8 +90,11 @@ class Player {
     this.name = name;
     this.maxHp = 10;
     this.hp = this.maxHp;
-    this.skill = "swordstrike";
+    this.damage = 0;
     this.class = bclass;
+    this.attacks = bclass.attacks;
+    this.isAfflicted = false;
+    this.affliction = false;
   }
   print() {
     console.log("Player: ", this);
@@ -128,6 +145,9 @@ const setUpCombat = (message, enemy) => {
     bclass: userhandler.getUser(message.author.id).class,
   });
   const en = new monsters[enemy]();
+  en.damage = 0;
+  en.isAfflicted = false;
+  en.affliction = false;
   const c = new Combat({
     id: ids,
     player: p,
@@ -136,7 +156,7 @@ const setUpCombat = (message, enemy) => {
   return c;
 };
 
-const huntmonster = async (args, message, dun = false) => {
+const hunt = async (args, message, dun = false) => {
   const chestChance = Math.round(Math.random() * 100 + 0) > 80 ? true : false;
   // const chestChance = true;
   let enemy = args[1] ? args[1] : "bear";
@@ -157,12 +177,13 @@ const huntmonster = async (args, message, dun = false) => {
     );
     em.setColor("03fcca");
     await message.channel.send(em);
-    c.turn = 1;
+    c.turn = 0;
     c.atk = true;
     if (args[0] === "auto") {
       c.inputs = false;
       c.lastaction = actions.INPUT;
-      return await attacks(args, message);
+      // return await attacks(args, message);
+      return await doBigCombat(c, message);
       // return await doRpgcombat(c, message);
     } else {
       let emn = require("../embeds");
@@ -249,38 +270,6 @@ const foundChest = async (args, c, message) => {
     return await dungeonCommands.onRoomDone(message);
   }
 };
-
-// const huntmonster2 = (args, message) => {
-//   const chestChance = Math.round(Math.random() * 100 + 0) > 95 ? true : false;
-//   // const chestChance = true;
-//   if (chestChance) {
-//     return foundChest(message);
-//   }
-//   ids += 1;
-//   const p = new Player({
-//     id: message.author.id,
-//     name: message.author.username,
-//   });
-//   const en = new monsters.wolf();
-//   const c = new Combat({
-//     id: ids,
-//     player: p,
-//     enemy: en,
-//   });
-//   if (combats.addcombat(c)) {
-//     message.channel.send(
-//       `A wild  ${en.name} has appeard\n please type **!attacks** followed by 4 attacks`
-//     );
-//     c.turn = 1;
-//     c.atk = true;
-//     c.inputs = true;
-//     c.lastaction = actions.INPUT;
-//     // doRpgcombat(c, message);
-//     return;
-//   } else {
-//     return message.channel.send(`You are in combat already`);
-//   }
-// };
 
 const attacks = (args, message) => {
   var c = combats.getcombat(message.author.id);
@@ -375,6 +364,89 @@ const doAftercombat = async (combat, message) => {
   }
 };
 
+const doPlayersTurn = (combat, player, enemy, crit, action) => {
+  let msg;
+  let statmsg = "";
+  let dmg = combat[player].damage;
+  // console.log(combat[player]);
+  if (combat[player].isAfflicted) {
+    console.log(`L372-P: `, combat[player].affliction);
+    statmsg = combat[player].affliction.doStatus(combat, player);
+  }
+
+  switch (action) {
+    case "attack":
+      msg = combat[player].attacks[0].doSkill(combat, player, enemy);
+      break;
+    case "defend":
+      if (combat[player].hasHealed) {
+        msg = combat[player].attacks[0].doSkill(combat, player, enemy);
+      } else {
+        combat[player].hasHealed = true;
+        msg = combat[player].attacks[1].doSkill(combat, player, enemy);
+      }
+      break;
+    case "skill":
+      msg = combat[player].attacks[2].doSkill(combat, player, enemy);
+      break;
+    default:
+      action = "attack";
+      msg = combat[player].attacks[0].doSkill(combat, player, enemy);
+      break;
+  }
+  if (crit && action == "attack") {
+    combat[player].damage += 1;
+    combat[enemy].hp -= 1;
+    msg = `${combat[player].name} has **critted** for ${combat[player].damage}\n`;
+  }
+  if (combat[player].damage === 0 && action !== "defend") {
+    msg = `${combat[player].name} missed \n`;
+  }
+  // console.log(
+  //   `L397-: ${combat[player].name},Hp: ${combat[player].hp} , A: ${action}, C: ${crit}, D: ${dmg}, Healed: ${combat[player].hasHealed}`
+  // );
+  combat[player].damage = 0;
+  return statmsg + msg;
+};
+
+const doBigCombat = (combat, message) => {
+  //nedd 3 msg, turn, combat, end
+  //forloop for doing the combat
+  let combatMsg = "",
+    turnMsg = "",
+    endMsg = "";
+  while (combat.checkHp()) {
+    combat.player.damage = Math.round(Math.random() * 4 + 0);
+    // combat.enemy.damage = Math.round(Math.random() * 1 + 0);
+    combat.enemy.damage = Math.round(Math.random() * combat.enemy.dmg + 0);
+    let playerAction = playerActions[Math.round(Math.random() * 2 + 0)];
+    // let playerAction = playerActions[2];
+    let enemyAction =
+      Math.round(Math.random() * 100) > 75 ? enemyActions[1] : enemyActions[0];
+    let playercrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
+    let enemycrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
+
+    combat.changeTurn();
+    turnMsg = combat.turn;
+    //do both peoples turns
+    combatMsg +=
+      `\n` +
+      `Turn: ${combat.turn}\n` +
+      doPlayersTurn(combat, "player", "enemy", playercrit, playerAction) +
+      doPlayersTurn(combat, "enemy", "player", enemycrit, enemyAction) +
+      `${combat.player.name} Hp: ${combat.player.hp} \\|| ${combat.enemy.name} Hp: ${combat.enemy.hp}\n`;
+    //add to the message
+  }
+  let color = combat.winner === combat.player.name ? "75f542" : "bf0808";
+  const embed = new Discord.MessageEmbed()
+    .setColor(color)
+    .setTitle(`${combat.player.name} VS ${combat.enemy.name}`)
+    .setDescription(combatMsg);
+
+  message.channel.send(embed);
+  doAftercombat(combat, message);
+};
+
 const doRpgcombat2 = (combat, message) => {
   let emn = require("../embeds");
   let s = require("../Rpg/skills");
@@ -429,51 +501,6 @@ const doRpgcombat2 = (combat, message) => {
   doAftercombat(combat, message);
 };
 
-// const doRpgcombat = async (combat, message) => {
-//   let emn = require("../embeds");
-//   let s = require("../Rpg/skills");
-//   let em = emn.rpgComabtEmbed;
-//   combat.playerDamage = Math.round(Math.random() * 5 + 0);
-//   combat.enemyDamage = Math.round(Math.random() * +0);
-//   let skill = Math.round(Math.random() * 100 + 0) > 75 ? true : false;
-//   let crit = Math.round(Math.random() * 100 + 0) > 75 ? true : false;
-//   if (combat.atk) {
-//     if (skill) {
-//       combat.playerDamage += 1;
-//     }
-//     combat.enemy.hp -= combat.playerDamage;
-//   } else {
-//     combat.player.hp += 2;
-//   }
-//   if (crit) {
-//     console.log("Crit true");
-//     combat.enemyDamage = 4;
-//   }
-//   combat.player.hp -= combat.enemyDamage;
-
-//   let msg1 = `You attacked for ${combat.playerDamage} damage \n`;
-//   if (skill) {
-//     msg1 = `You ${s.swordstrike.msg} for ${combat.playerDamage} damage \n`;
-//   }
-//   if (combat.playerDamage === 0) {
-//     msg1 = `You missed \n`;
-//   }
-//   let msg2 = `the ${combat.enemy.name} attacked for ${combat.enemyDamage} damage \n`;
-//   if (crit) {
-//     msg2 = `the ${combat.enemy.name} has Critted for ${combat.enemyDamage} damage \n`;
-//   }
-//   if (combat.enemyDamage === 0) {
-//     msg2 = `${combat.enemy.name} missed \n`;
-//   }
-//   let msg3 = `${combat.player.name} Hp: ${combat.player.hp} || ${combat.enemy.name} Hp: ${combat.enemy.hp}\n`;
-//   em.title = `Turn ${combat.turn} :`;
-//   em.description = msg1 + msg2 + msg3;
-//   const color = combat.player.hp >= combat.enemy.hp ? "7ED321" : "D0021B";
-//   em.setColor(color);
-//   message.channel.send(em);
-//   await doAftercombat(combat, message);
-// };
-
 const getmycombat = (args, message) => {
   let c = combats.getcombat(message.author.id);
   if (c) {
@@ -493,7 +520,7 @@ const sayhi = () => {
 };
 
 const dic = {
-  huntmonster,
+  hunt,
   getmycombat,
   getcombat,
   attacks,

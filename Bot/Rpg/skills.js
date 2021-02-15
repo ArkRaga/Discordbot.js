@@ -6,57 +6,136 @@ const status = {
   CONFUSSED: "confussed",
 };
 
-const basic = {
-  name: "Attack",
-  dmg: 0,
-  status: status.NONE,
-  msg: "attacks",
-  doSkill: (combat, p1, p2) => {
-    combat[p2].hp -= combat[`${p1}Damage`];
-    return `attacked for ${combat[`${p1}Damage`]} damage \n`;
-  },
-};
+class Status {
+  constructor({ duration, damage, msg }) {
+    this.duration = duration;
+    this.damage = damage;
+    this.msg = msg;
+  }
+  doStatus() {}
+}
 
-const swordstrike = {
-  name: "Sword Strike",
-  dmg: 2,
-  status: status.BLEED,
-  msg: "performs A heavy downward sword strike",
-  doSkill: (combat, p1, p2) => {
-    combat[`${p1}Damage`] = 3;
-    combat[p2].hp -= combat[`${p1}Damage`];
-    return `performed A heavy downward sword strike for ${
-      combat[`${p1}Damage`]
-    } damage \n`;
-  },
-};
+class Bleed extends Status {
+  constructor() {
+    super({
+      duration: 3,
+      damage: 1,
+      msg: ` takes 1 damage due to bleeding \n`,
+    });
+    this.endTurn = 0;
+  }
+  doStatus(combat, player) {
+    combat[player].hp -= 1;
+    if (combat.turn === this.endTurn) {
+      combat[player].isAfflicted = false;
+      this.msg += " the affliction has worn off\n";
+    }
+    return combat[player].name + this.msg;
+  }
+}
 
-/*
- doSkill(comabt){
-   combat.enemy.hp -= combat.playerdamage
-   return "so and so did the thing and boom"
- }
+class Skill {
+  constructor({ name, stat = status.NONE, msg }) {
+    this.name = name;
+    this.status = stat;
+    this.msg = msg;
+  }
+  doSkill() {}
+}
 
-*/
+class Basic extends Skill {
+  constructor() {
+    super({
+      name: "basic attack",
+      msg: "attacks",
+    });
+  }
+  doSkill(combat, p1, p2) {
+    combat[p2].hp -= combat[p1].damage;
+    return combat[p1].name + ` attacked for ${combat[p1].damage} damage \n`;
+  }
+}
 
-const bite = {
-  name: "Bite",
-  dmg: 3,
-  status: status.BLEED,
-  msg: "bites down and thrashes about befor letting go",
-};
-const roar = {
-  name: "Roar",
-  dmg: 1,
-  status: status.STUN,
-  msg: "Unleashes a loud bone shaking roar",
-};
-const swipe = {
-  name: "Swipe",
-  dmg: 1,
-  status: status.NONE,
-  msg: "quicky strikes with their claws",
-};
+class Heal extends Skill {
+  constructor() {
+    super({
+      name: "Heal",
+      msg: "Has healed for",
+    });
+  }
+  doSkill(combat, p1) {
+    combat[p1].hp += 2;
+    if (combat[p1].hp > combat[p1].maxHp) {
+      combat[p1].hp = combat[p1].maxHp;
+    }
+    return combat[p1].name + ` has heald for 2 \n`;
+  }
+}
 
-const dic = { basic, bite, roar, swordstrike, swipe };
+class Swordstrike extends Skill {
+  constructor() {
+    super({
+      name: "Sword Strike",
+      status: status.BLEED,
+      msg: " performs A heavy downward sword strike",
+    });
+    this.afflict = false;
+  }
+  doSkill(combat, p1, p2) {
+    combat[p1].damage = 4;
+    combat[p2].hp -= combat[p1].damage;
+    if (!this.afflict) {
+      let a = new Bleed();
+      a.endTurn = a.duration + combat.turn;
+      combat[p2].affliction = a;
+      combat[p2].isAfflicted = true;
+      this.afflict = true;
+      return (
+        combat[p1].name +
+        this.msg +
+        ` for ${combat[p1].damage} damage\n ${combat[p1].name} has inflicted Bleed \n`
+      );
+    }
+    return combat[p1].name + this.msg + ` ${combat[p1].damage} damage \n`;
+  }
+}
+
+class Bite extends Skill {
+  constructor() {
+    super({
+      name: "Bite",
+      status: status.BLEED,
+      msg: " bites down and thrashes about befor letting go",
+    });
+  }
+  doSkill() {}
+}
+
+class Roar extends Skill {
+  constructor() {
+    super({
+      name: "Roar",
+      status: status.STUN,
+      msg: "Unleashes a loud bone shaking roar",
+    });
+  }
+  doSkill() {}
+}
+
+class Swipe extends Skill {
+  constructor() {
+    super({
+      name: "Swipe",
+      status: status.NONE,
+      msg: " quicky strikes with their claws",
+    });
+  }
+  doSkill(combat, p1, p2) {
+    combat[p1].damage = 3;
+    combat[p2].hp -= combat[p1].damage;
+    return combat[p1].name + this.msg + ` for ${combat[p1].damage} damage\n`;
+  }
+}
+
+const dic = { Basic, Bite, Roar, Swordstrike, Swipe, Heal };
 module.exports = dic;

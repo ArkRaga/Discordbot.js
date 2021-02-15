@@ -1,4 +1,4 @@
-const commands = require("./Combat/combatCommands");
+const commands = require("./Combat/pvpCombat");
 const Discord = require("discord.js");
 
 const userEmbed = {

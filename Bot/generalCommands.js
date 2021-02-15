@@ -91,16 +91,17 @@ const playchess = async (args, message) => {
 };
 
 const sayhi = async (args, message) => {
-  let emn = require("./embeds");
-  let em = emn.rpgCombatEndEmbed;
-  em.description = "This is the descrption";
-  em.title = "This is the title";
-  em.color = "a83295";
+  return await message.channel.send("Hi");
+  // let emn = require("./embeds");
+  // let em = emn.rpgCombatEndEmbed;
+  // em.description = "This is the descrption";
+  // em.title = "This is the title";
+  // em.color = "a83295";
 
-  // let arr = ["🗡️", "🛡️", "🔥", "❤️", "📖"];
-  const msg = await message.channel.send({
-    embed: em,
-  });
+  // // let arr = ["🗡️", "🛡️", "🔥", "❤️", "📖"];
+  // const msg = await message.channel.send({
+  //   embed: em,
+  // });
   // await arr.forEach((x) => msg.react(x));
 
   // const filter = (reaction, user) => {

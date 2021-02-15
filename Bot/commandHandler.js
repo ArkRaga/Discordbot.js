@@ -1,19 +1,21 @@
 const genCommands = require("./generalCommands");
 // const combatCommands = require("./Combat/combatCommands");
-const combatReactionCommands = require("./Combat/combatReactHandler");
+// const combatReactionCommands = require("./Combat/combatReactHandler");
 const userCommands = require("./userHandler").dic;
 const inventoryCommands = require("./Rpg/inventory").dic;
 const questSystemHandler = require("./Rpg/questHandler");
 const { rpgcombat } = require("./Combat/rpgCombat");
 const { dungeonCommands } = require("./Rpg/Dungeons/dungeonHandler");
+const { pvpcommands } = require("../Bot/Combat/pvpCombat");
 
 const commands = {
   ...genCommands,
-  ...combatReactionCommands,
+  // ...combatReactionCommands,
   ...userCommands,
   ...inventoryCommands,
   ...questSystemHandler,
   ...rpgcombat,
+  ...pvpcommands,
   ...dungeonCommands,
 };
 
