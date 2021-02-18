@@ -2,7 +2,6 @@
 const { items, itemDictionary } = require("./items");
 const fs = require("fs");
 const { ItemTypes } = require("./items");
-const { ItemDictionaryEntry } = require("./items");
 
 /*
 iventory:
@@ -137,14 +136,14 @@ const getDropBy = (item) => {
 /*/////
     Commnads
  ////*/
-const craft = (args, message) => {
+const craft = async (args, message) => {
   let item = new itemDictionary[args[0]].itemClass();
   let inv = inventorys.getInventory(message.author.id);
   let canCraft = true;
   if (!item) {
-    return message.channel.send("invalid Crafting item");
+    return await message.channel.send("invalid Crafting item");
   }
-  item.mats.forEach((ele) => {
+  await item.mats.forEach((ele) => {
     if (!inv.hasItem(ele)) {
       message.channel.send("you do not have the material required");
       return (canCraft = false);
@@ -165,10 +164,11 @@ const craft = (args, message) => {
     }
   });
   inv.addItem(item);
-  message.channel.send("suscessfully crafted: ", item.name);
+
+  await message.channel.send(`suscessfully crafted: ${item.name}`);
 };
 
-const addinv = (args, message) => {
+const addinv = async (args, message) => {
   inventorys.addInventory(message.author.id, message.author.username);
   message.channel.send("it has be done");
 };

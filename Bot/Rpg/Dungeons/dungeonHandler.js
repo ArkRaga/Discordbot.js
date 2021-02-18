@@ -1,4 +1,6 @@
 const { td } = require("./dungeons");
+const { inventorys } = require("../inventory");
+const { itemDictionary } = require("../items");
 
 class DungeonHandler {
   constructor() {
@@ -22,8 +24,26 @@ class DungeonHandler {
 const dungeonHandler = new DungeonHandler();
 
 const run = (args, message) => {
+  const d = td;
   if (dungeonHandler.getDungeon(message.author.id)) {
     return message.channel.send("You are already in a Dungeon");
+  }
+  if (d.needkey === true) {
+    //check for key
+    let inv = inventorys.getInventory(message.author.id);
+    if (!inv) {
+      return message.channel.send(`Sorry but you need ${d.key.name} to enter`);
+    }
+    if (inv.hasItem(d.key)) {
+      item = inv.getItem(d.key);
+      if (item.quantity === 1) {
+        inv.removeItem(item);
+      } else {
+        item.quantity -= 1;
+      }
+    } else {
+      return message.channel.send(`Sorry but you need ${d.key.name} to enter`);
+    }
   }
   const p = {
     id: message.author.id,
@@ -32,7 +52,6 @@ const run = (args, message) => {
     hp: 10,
     maxHp: 10,
   };
-  const d = td;
   p.pos = 1;
   d.addPlayer(p);
   d.addBoss("aBoss");
@@ -46,7 +65,10 @@ const afterRun = (r, message) => {
   const dun = r;
   let msg = "Rooms:\n";
   if (dun.exits === false) {
-    return message.channel.send(" Congratz you reached the end!");
+    dungeonHandler.deleteDungeon(message.author.id);
+    return message.channel.send(
+      " Congratz you beat the boss and finished the dungeon!"
+    );
   }
   dun.exits.forEach((x) => (msg += ` room: ${x}\n`));
   message.channel.send(msg);
@@ -55,7 +77,6 @@ const afterRun = (r, message) => {
 
 const goto = async (args, message) => {
   const dun = dungeonHandler.getDungeon(message.author.id);
-
   const prevRoom = dun.rooms.find((x) => x.roomNumber == dun.player.pos);
   const roomToGo = dun.rooms.find((x) => x.roomNumber == args[0]);
   if (!prevRoom.exits.some((x) => x == args[0])) {
@@ -77,6 +98,9 @@ const goto = async (args, message) => {
 
 const onRoomDone = (message) => {
   const dun = dungeonHandler.getDungeon(message.author.id);
+  if (!dun) {
+    return;
+  }
   const prevRoom = dun.rooms.find((x) => x.roomNumber == dun.player.pos);
   return afterRun(prevRoom, message);
 };

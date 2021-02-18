@@ -1,11 +1,14 @@
 const { rooms } = require("./room");
 const { monsters } = require("../monsters");
+const { itemDictionary } = require("../items");
 
 class Dungeon {
-  constructor() {
+  constructor(needkey = false) {
     this.rooms = [];
     this.boss;
     this.player;
+    this.needkey = needkey;
+    this.key = false;
   }
   addRoom(room) {
     this.rooms = room;
@@ -20,7 +23,8 @@ class Dungeon {
 
 class TestDungeon extends Dungeon {
   constructor() {
-    super();
+    super(false);
+    this.key = new itemDictionary.basickey.itemClass();
   }
 }
 

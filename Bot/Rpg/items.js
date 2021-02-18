@@ -98,6 +98,12 @@ class Obsidian extends MaterialItem {
   }
 }
 
+class BasicKey extends MaterialItem {
+  constructor(quantity = 1, quality = ItemQuality.NORMAL) {
+    super({ id: 16, name: "Basic dungeon key", quality, quantity });
+  }
+}
+
 class CopperBar extends CraftedItem {
   constructor(quantity = 1) {
     super({
@@ -239,6 +245,11 @@ const itemDictionary = {
     itemClass: GoodPelt,
     name: "Good Pelt",
     id: 12,
+  }),
+  basickey: new ItemDictionaryEntry({
+    itemClass: BasicKey,
+    name: "Basic dungeon key",
+    id: 16,
   }),
 };
 

@@ -28,7 +28,10 @@ class Werewolf extends CharClass {
       attacks: [new skill.Roar(), new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "Werewolf.png" },
-      quip: "The moon is full tonight.",
+      quip: {
+        start: "The moon is full tonight.",
+        end: "I could smell the scent of death from the beginning.",
+      },
     });
   }
 }
@@ -40,7 +43,10 @@ class Knight extends CharClass {
       attacks: [new skill.Roar(), new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "Knight.png" },
-      quip: "For the Queen",
+      quip: {
+        start: "Onward into battle",
+        end: "I hoped your honor amounted to more.",
+      },
     });
   }
 }
@@ -52,7 +58,10 @@ class Priest extends CharClass {
       attacks: [new skill.Roar(), new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "Priest.png" },
-      quip: "The light has shown us the true victor.",
+      quip: {
+        start: "Talk to a priest and die a thousand deaths.",
+        end: "The light has shown us the true victor.",
+      },
       talent: new talents.HealOnTurn(),
     });
   }
@@ -65,9 +74,13 @@ class Startclass extends CharClass {
       attacks: [new skill.Swordstrike()],
       damage: 3,
       gfx: { main: "StartClass.png" },
-      quip: "I shouldnt even be here",
+      quip: { start: "Im so lost.", end: "I shouldnt even be here" },
       talent: new talents.HealOnTurn(),
     });
+  }
+  doReset() {
+    console.log("rpgclassesL82- Reset");
+    this.attacks.forEach((x) => x.doReset());
   }
 }
 

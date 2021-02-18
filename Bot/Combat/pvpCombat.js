@@ -286,7 +286,7 @@ const doBigCombat = (combat, message) => {
     combat.winner
   }> has won the duel! and earned 5 battle points! \n __${
     u.user.username
-  }__ : \"_${userhandler.getUser(combat.winner).class.quip}_\"`;
+  }__ : \"_${userhandler.getUser(combat.winner).class.quip.end}_\"`;
   const embed = new Discord.MessageEmbed()
     .setColor("fcc203")
     .setTitle(`${combat.player.name} VS ${combat.enemy.name}`)

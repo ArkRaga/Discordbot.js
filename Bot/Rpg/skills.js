@@ -29,6 +29,7 @@ class Bleed extends Status {
     if (combat.turn === this.endTurn) {
       combat[player].isAfflicted = false;
       this.msg += " the affliction has worn off\n";
+      this.endTurn = 0;
     }
     return combat[player].name + this.msg;
   }
@@ -41,6 +42,7 @@ class Skill {
     this.msg = msg;
   }
   doSkill() {}
+  doReset() {}
 }
 
 class Basic extends Skill {
@@ -79,6 +81,9 @@ class Swordstrike extends Skill {
       status: status.BLEED,
       msg: " performs A heavy downward sword strike",
     });
+    this.afflict = false;
+  }
+  doReset() {
     this.afflict = false;
   }
   doSkill(combat, p1, p2) {

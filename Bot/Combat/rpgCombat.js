@@ -367,10 +367,15 @@ const doAftercombat = async (combat, message) => {
 const doPlayersTurn = (combat, player, enemy, crit, action) => {
   let msg;
   let statmsg = "";
+  let talentmsg = "";
   let dmg = combat[player].damage;
-  // console.log(combat[player]);
+  if (combat[player].class) {
+    if (combat[player].class.talent.doTalent(combat, player)) {
+      talentmsg = combat[player].class.talent.msg;
+    }
+  }
+
   if (combat[player].isAfflicted) {
-    console.log(`L372-P: `, combat[player].affliction);
     statmsg = combat[player].affliction.doStatus(combat, player);
   }
 
@@ -402,11 +407,8 @@ const doPlayersTurn = (combat, player, enemy, crit, action) => {
   if (combat[player].damage === 0 && action !== "defend") {
     msg = `${combat[player].name} missed \n`;
   }
-  // console.log(
-  //   `L397-: ${combat[player].name},Hp: ${combat[player].hp} , A: ${action}, C: ${crit}, D: ${dmg}, Healed: ${combat[player].hasHealed}`
-  // );
   combat[player].damage = 0;
-  return statmsg + msg;
+  return talentmsg + statmsg + msg;
 };
 
 const doBigCombat = (combat, message) => {
@@ -437,12 +439,12 @@ const doBigCombat = (combat, message) => {
       `${combat.player.name} Hp: ${combat.player.hp} \\|| ${combat.enemy.name} Hp: ${combat.enemy.hp}\n`;
     //add to the message
   }
+  combat.player.class.attacks.forEach((x) => x.doReset());
   let color = combat.winner === combat.player.name ? "75f542" : "bf0808";
   const embed = new Discord.MessageEmbed()
     .setColor(color)
     .setTitle(`${combat.player.name} VS ${combat.enemy.name}`)
     .setDescription(combatMsg);
-
   message.channel.send(embed);
   doAftercombat(combat, message);
 };
@@ -519,12 +521,76 @@ const sayhi = () => {
   console.log("HI");
 };
 
+const dungeonCombat = async (message, monster) => {
+  const combat = setUpCombat(message, monster);
+  let combatMsg = "",
+    turnMsg = "",
+    endMsg = "";
+  while (combat.checkHp()) {
+    combat.player.damage = Math.round(Math.random() * 4 + 0);
+    // combat.enemy.damage = Math.round(Math.random() * 1 + 0);
+    combat.enemy.damage = Math.round(Math.random() * combat.enemy.dmg + 0);
+    let playerAction = playerActions[Math.round(Math.random() * 2 + 0)];
+    // let playerAction = playerActions[2];
+    let enemyAction =
+      Math.round(Math.random() * 100) > 75 ? enemyActions[1] : enemyActions[0];
+    let playercrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
+    let enemycrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
+
+    combat.changeTurn();
+    turnMsg = combat.turn;
+    //do both peoples turns
+    combatMsg +=
+      `\n` +
+      `Turn: ${combat.turn}\n` +
+      doPlayersTurn(combat, "player", "enemy", playercrit, playerAction) +
+      doPlayersTurn(combat, "enemy", "player", enemycrit, enemyAction) +
+      `${combat.player.name} Hp: ${combat.player.hp} \\|| ${combat.enemy.name} Hp: ${combat.enemy.hp}\n`;
+    //add to the message
+  }
+  combat.player.class.attacks.forEach((x) => x.doReset());
+  let color = combat.winner === combat.player.name ? "75f542" : "bf0808";
+  const embed = new Discord.MessageEmbed()
+    .setColor(color)
+    .attachFiles(`./gfxs/${combat.enemy.name}.png`)
+    .setThumbnail(`attachment://${combat.enemy.name}.png`)
+    .setTitle(`${combat.player.name} VS ${combat.enemy.name}`)
+    .setDescription(combatMsg);
+  combats.removecombat(combat);
+
+  if (combat.winner === combat.player.name) {
+    let msg1 = "you gained: \n";
+    inventorys.addInventory(message.author.id, message.author.username);
+    const inven = inventorys.getInventory(message.author.id);
+    combat.enemy.drops.forEach((x) => {
+      msg1 += ` **${x.name}** x${x.quantity}\n`;
+      inven.addItem(x);
+    });
+    embed.addFields({ name: `${combat.player.name} has won!`, value: msg1 });
+    await message.channel.send(embed);
+    return await dungeonCommands.onRoomDone(message);
+  } else {
+    const emn = require("../embeds");
+    const em = Object.create(emn.rpgCombatEndEmbed);
+    em.setColor("D0021B");
+    em.attachFiles(`./gfxs/Rip.png`).setImage(`attachment://Rip.png`);
+    em.setTitle(`the ${combat.winner} has won the fight`);
+    em.setDescription(
+      "You have been removed from the Dungeon, come back stronger"
+    );
+    dungeonHandler.deleteDungeon(message.author.id);
+    await message.channel.send(embed);
+    return await message.channel.send(em);
+  }
+};
+
 const dic = {
   hunt,
   getmycombat,
   getcombat,
   attacks,
   sayhi,
+  dungeonCombat,
 };
 
 module.exports.rpgcombat = dic;

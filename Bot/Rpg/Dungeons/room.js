@@ -2,7 +2,7 @@ const { dic } = require("../../Combat/rpgCombat");
 const { inventorys } = require("../../Rpg/inventory");
 
 class Room {
-  constructor(exits, num, type) {
+  constructor(exits, num, type = "basic") {
     this.roomNumber = num;
     this.exits = exits;
     this.type = type;
@@ -49,8 +49,8 @@ class CombatRoom extends Room {
     return this.enemies[Math.round(Math.random() * (this.enemies.length - 1))];
   }
   Do(message) {
-    const { dic } = require("../../Combat/rpgCombat");
-    return dic.huntmonster(["auto", "wolf"], message, true);
+    const { rpgcombat } = require("../../Combat/rpgCombat");
+    return rpgcombat.dungeonCombat(message, "wolf");
   }
 }
 
@@ -89,6 +89,8 @@ class BossRoom extends Room {
   }
   Do(message) {
     message.channel.send("Youve reached the boss rooom");
+    const { rpgcombat } = require("../../Combat/rpgCombat");
+    return rpgcombat.dungeonCombat(message, "bear");
   }
 }
 
