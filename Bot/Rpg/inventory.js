@@ -55,6 +55,9 @@ class usersInventoryHandler {
   }
   printUserInventory(id) {
     let ui = this.getInventory(id);
+    if (!ui) {
+      return console.log("no inventory");
+    }
     ui.print();
   }
   addInventory(id, name) {
@@ -220,8 +223,8 @@ const removeinvitem = (args, message) => {
   removeitemfrominv(message.author.id, new item.itemClass());
 };
 
-const printmyinv = (args, message) => {
-  inventorys.printUserInventory(message.author.id);
+const myinv = (args, message) => {
+  // inventorys.printUserInventory(message.author.id);
   const inven = inventorys.getInventory(message.author.id);
   let emn = require("../embeds");
   let em = Object.create(emn.invEmbed);
@@ -275,7 +278,7 @@ const dic = {
   printinv,
   printinvitems,
   giveitem,
-  printmyinv,
+  myinv,
   item,
   removeinvitem,
   edititem,

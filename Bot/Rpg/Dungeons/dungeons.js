@@ -7,6 +7,7 @@ class Dungeon {
     this.rooms = [];
     this.boss;
     this.player;
+    this.isAlive = true;
     this.needkey = needkey;
     this.key = false;
   }
@@ -25,18 +26,22 @@ class TestDungeon extends Dungeon {
   constructor() {
     super(false);
     this.key = new itemDictionary.basickey.itemClass();
+    this.msg = "Welcome to test dungeon, im but a mere test.!";
   }
 }
 
 const td = new TestDungeon();
-const cR = new rooms.CombatRoom([5], 2, "combat");
-cR.addEnmeies(new monsters.wolf());
 const tier1 = [
-  new rooms.BasicRoom([2, 3], 1, "basic"),
-  cR,
-  new rooms.BasicRoom([4, 5], 3, "basic"),
-  new rooms.BasicRoom([5], 4, "basic"),
-  new rooms.BossRoom(false, 5, "boss"),
+  new rooms.BasicRoom([2, 3], 1),
+  new rooms.CombatRoom([5], 2, new monsters.wolf()),
+  new rooms.TreasureRoom([5, 4], 3, new itemDictionary.sharptooth.itemClass(3)),
+  new rooms.BasicRoom([5], 4),
+  new rooms.BossRoom(
+    false,
+    5,
+    new monsters.bear(),
+    new itemDictionary.metalarmor.itemClass()
+  ),
 ];
 td.addRoom(tier1);
 module.exports.td = td;

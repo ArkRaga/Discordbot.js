@@ -1,4 +1,5 @@
 const users = require("./userHandler").users;
+const Discord = require("discord.js");
 
 const ping = async (args, message) => {
   await message.channel.send(`${message.author.toString()}, dont bother me`);
@@ -90,41 +91,17 @@ const playchess = async (args, message) => {
   );
 };
 
-const sayhi = async (args, message) => {
-  return await message.channel.send("Hi");
-  // let emn = require("./embeds");
-  // let em = emn.rpgCombatEndEmbed;
-  // em.description = "This is the descrption";
-  // em.title = "This is the title";
-  // em.color = "a83295";
+const say = async (args, message) => {
+  const em2 = new Discord.MessageEmbed()
+    .setColor()
+    .setTitle("Im the seccond embed")
+    .setDescription("Do the roar");
+  const em1 = new Discord.MessageEmbed()
+    .setColor()
+    .setTitle("Main embed")
+    .setDescription(`${em2.title}, ${em2.description}`);
 
-  // // let arr = ["🗡️", "🛡️", "🔥", "❤️", "📖"];
-  // const msg = await message.channel.send({
-  //   embed: em,
-  // });
-  // await arr.forEach((x) => msg.react(x));
-
-  // const filter = (reaction, user) => {
-  //   // console.log("turn: ", combat[target + "name"]);
-  //   return arr.includes(reaction.emoji.name) && user.id == message.author.id;
-  // };
-
-  // msg
-  //   .awaitReactions(filter, { max: 4 })
-  //   .then((collected) => {
-  //     console.log("Size: ", collected.size);
-  //     collected.each((x) => {
-  //       if (x.emoji.name === arr[0]) {
-  //         message.reply("sword");
-  //       } else {
-  //         message.reply("notsword");
-  //       }
-  //       collected.users.remove(message.author.id);
-  //     });
-  //   })
-  //   .catch((collected) => {
-  //     message.reply("there has been an err in create embed");
-  //   });
+  return await message.channel.send(em1);
 };
 
 const closeRoyal = (args, message) => {
@@ -145,9 +122,9 @@ const dick = {
   playchess,
   edittopic,
   printuser,
-  sayhi,
   printclasses,
   timer,
+  say,
 };
 
 module.exports = dick;

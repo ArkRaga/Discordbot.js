@@ -521,15 +521,15 @@ const sayhi = () => {
   console.log("HI");
 };
 
-const dungeonCombat = async (message, monster) => {
+const dungeonCombat = (message, monster, dun) => {
   const combat = setUpCombat(message, monster);
   let combatMsg = "",
     turnMsg = "",
     endMsg = "";
   while (combat.checkHp()) {
     combat.player.damage = Math.round(Math.random() * 4 + 0);
-    // combat.enemy.damage = Math.round(Math.random() * 1 + 0);
-    combat.enemy.damage = Math.round(Math.random() * combat.enemy.dmg + 0);
+    combat.enemy.damage = 50;
+    // combat.enemy.damage = Math.round(Math.random() * combat.enemy.dmg + 0);
     let playerAction = playerActions[Math.round(Math.random() * 2 + 0)];
     // let playerAction = playerActions[2];
     let enemyAction =
@@ -549,38 +549,26 @@ const dungeonCombat = async (message, monster) => {
     //add to the message
   }
   combat.player.class.attacks.forEach((x) => x.doReset());
-  let color = combat.winner === combat.player.name ? "75f542" : "bf0808";
-  const embed = new Discord.MessageEmbed()
-    .setColor(color)
-    .attachFiles(`./gfxs/${combat.enemy.name}.png`)
-    .setThumbnail(`attachment://${combat.enemy.name}.png`)
-    .setTitle(`${combat.player.name} VS ${combat.enemy.name}`)
-    .setDescription(combatMsg);
-  combats.removecombat(combat);
 
   if (combat.winner === combat.player.name) {
-    let msg1 = "you gained: \n";
+    dun.isAlive = true;
+    let msg1 = `\n**${combat.player.name}** has won!\n`;
+    msg1 += "you gained: \n";
     inventorys.addInventory(message.author.id, message.author.username);
     const inven = inventorys.getInventory(message.author.id);
     combat.enemy.drops.forEach((x) => {
       msg1 += ` **${x.name}** x${x.quantity}\n`;
       inven.addItem(x);
     });
-    embed.addFields({ name: `${combat.player.name} has won!`, value: msg1 });
-    await message.channel.send(embed);
-    return await dungeonCommands.onRoomDone(message);
+    let titlemsg = `**${combat.player.name} VS ${combat.enemy.name}**\n`;
+    let fullmsg = (titlemsg += combatMsg += msg1);
+    return fullmsg;
   } else {
-    const emn = require("../embeds");
-    const em = Object.create(emn.rpgCombatEndEmbed);
-    em.setColor("D0021B");
-    em.attachFiles(`./gfxs/Rip.png`).setImage(`attachment://Rip.png`);
-    em.setTitle(`the ${combat.winner} has won the fight`);
-    em.setDescription(
-      "You have been removed from the Dungeon, come back stronger"
-    );
-    dungeonHandler.deleteDungeon(message.author.id);
-    await message.channel.send(embed);
-    return await message.channel.send(em);
+    dun.isAlive = false;
+    let msg1 = `\n the **${combat.winner}** has won the fight\n You have been removed from the Dungeon, \ncome back stronger\n`;
+    let titlemsg = `**${combat.player.name} VS ${combat.enemy.name}**\n`;
+    fullmsg = titlemsg += combatMsg += msg1;
+    return fullmsg;
   }
 };
 

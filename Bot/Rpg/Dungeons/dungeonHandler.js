@@ -1,6 +1,7 @@
 const { td } = require("./dungeons");
 const { inventorys } = require("../inventory");
 const { itemDictionary } = require("../items");
+const discord = require("discord.js");
 
 class DungeonHandler {
   constructor() {
@@ -54,43 +55,60 @@ const run = (args, message) => {
   };
   p.pos = 1;
   d.addPlayer(p);
-  d.addBoss("aBoss");
   dungeonHandler.addDungeons(d);
 
   let r = d.rooms[0];
-  afterRun(r, message);
+  afterRun(r, message, d);
 };
 
-const afterRun = (r, message) => {
-  const dun = r;
-  let msg = "Rooms:\n";
-  if (dun.exits === false) {
+const afterRun = (r, message, dun) => {
+  console.log("Dungonehandler-L65: after run");
+  const embed = new discord.MessageEmbed();
+  const room = r;
+  let msg = "";
+  let roomLabel = room.roomNumber === 1 ? "Entrance" : room.type;
+  embed.setTitle(`Current room: ${roomLabel}`);
+  embed.setDescription(dun.msg);
+  if (!dun.isAlive) {
+    embed.setDescription(dun.msg);
+    embed.setTitle("Dungeon Failed");
     dungeonHandler.deleteDungeon(message.author.id);
-    return message.channel.send(
-      " Congratz you beat the boss and finished the dungeon!"
-    );
+    return message.channel.send(embed);
   }
-  dun.exits.forEach((x) => (msg += ` room: ${x}\n`));
-  message.channel.send(msg);
-  message.channel.send("please type ! goto and the number");
+  if (room.exits === false) {
+    let msg = room.giveItem(message);
+    let finalmsg = `You have beaten the Boss and completed the dungeon\n`;
+    embed.setDescription(dun.msg + finalmsg + msg);
+    embed.setTitle("Dungeon Complete");
+    embed
+      .attachFiles(`./gfxs/${r.boss.name}.png`)
+      .setThumbnail(`attachment://${r.boss.name}.png`);
+    dungeonHandler.deleteDungeon(message.author.id);
+    return message.channel.send(embed);
+  }
+
+  room.exits.forEach((x) => (msg += ` room: ${x}\n`));
+  msg += "please type ! goto and the number\n";
+  embed.addFields({ name: "Rooms: ", value: msg });
+  message.channel.send(embed);
 };
 
 const goto = async (args, message) => {
+  console.log("Dungonehandler-L97: goto");
   const dun = dungeonHandler.getDungeon(message.author.id);
   const prevRoom = dun.rooms.find((x) => x.roomNumber == dun.player.pos);
   const roomToGo = dun.rooms.find((x) => x.roomNumber == args[0]);
   if (!prevRoom.exits.some((x) => x == args[0])) {
     message.channel.send(`not a vaild room.`);
-    return await afterRun(prevRoom, message);
+    return await afterRun(prevRoom, message, dun);
   }
   if (roomToGo) {
     dun.player.pos = roomToGo.roomNumber;
-    message.channel.send(`you moved to room ${roomToGo.roomNumber}`);
-    if (roomToGo.type === "combat") {
-      return await roomToGo.Do(message);
-    }
-    await roomToGo.Do(message);
-    return await onRoomDone(message);
+    // message.channel.send(`you moved to room ${roomToGo.roomNumber}`);
+    await (dun.msg = roomToGo.Do(message, dun));
+    // return await onRoomDone(message);
+    console.log("Dungonehandler-L110: after combat");
+    return await afterRun(roomToGo, message, dun);
   } else {
     return await message.channel.send(`get fucked`);
   }
@@ -98,11 +116,12 @@ const goto = async (args, message) => {
 
 const onRoomDone = (message) => {
   const dun = dungeonHandler.getDungeon(message.author.id);
-  if (!dun) {
+  if (!dun.isAlive) {
+    message.channel.send(dun.msg);
     return;
   }
   const prevRoom = dun.rooms.find((x) => x.roomNumber == dun.player.pos);
-  return afterRun(prevRoom, message);
+  return afterRun(prevRoom, message, dun);
 };
 
 const dic = {
