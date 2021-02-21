@@ -159,7 +159,46 @@ const setUpCombat = (message, enemy) => {
 const hunt = async (args, message, dun = false) => {
   const chestChance = Math.round(Math.random() * 100 + 0) > 80 ? true : false;
   // const chestChance = true;
-  let enemy = args[1] ? args[1] : "bear";
+  // args[0] = "auto";
+  const auto = true;
+  let enemy = Object.keys(monsters)[
+    Math.floor(Math.random() * (Object.keys(monsters).length - 1))
+  ];
+  // look to see if you have the enemy item if so do that enemy
+  // let enemy = args[1] ? args[1] : "bear";
+  if (args.length > 0) {
+    let m = Object.keys(monsters).find((x) => x === args[0] || x === args[1]);
+    let en = new monsters[m]();
+
+    //check if user has item in their inventory
+    if (inventorys.hasInventory(message.author.id)) {
+      if (inventorys.getInventory(message.author.id).hasItem(en.huntItem)) {
+        if (
+          inventorys.getInventory(message.author.id).getItem(en.huntItem)
+            .quantity > 1
+        ) {
+          inventorys
+            .getInventory(message.author.id)
+            .getItem(en.huntItem).quantity -= 1;
+        } else {
+          inventorys.getInventory(message.author.id).removeItem(en.huntItem);
+        }
+        enemy = en.name.toLowerCase();
+      } else {
+        //doesnt have item
+        return await message.channel.send(
+          "You do not have the item for hunting this monster"
+        );
+      }
+    } else {
+      return await message.channel.send(
+        "You do not have the item for hunting this monster"
+      );
+      //doesnt have inventory
+    }
+  }
+
+  // console.log("Rpgcombat-L168- Enemy: ", enemy);
   const c = setUpCombat(message, enemy);
   if (dun) {
     c.dun = dun;
@@ -168,18 +207,18 @@ const hunt = async (args, message, dun = false) => {
     return foundChest(args, c, message);
   }
   if (combats.addcombat(c)) {
-    let emn = require("../embeds");
-    let em = Object.create(emn.basicEmbed);
-    em.files = [];
-    em.setTitle(`A wild  ${c.enemy.name} has appeard `);
-    em.attachFiles(`./gfxs/${c.enemy.name}.png`).setImage(
-      `attachment://${c.enemy.name}.png`
-    );
-    em.setColor("03fcca");
-    await message.channel.send(em);
+    // let emn = require("../embeds");
+    // let em = Object.create(emn.basicEmbed);
+    // em.files = [];
+    // em.setTitle(`A wild  ${c.enemy.name} has appeard `);
+    // em.attachFiles(`./gfxs/${c.enemy.name}.png`).setImage(
+    //   `attachment://${c.enemy.name}.png`
+    // );
+    // em.setColor("03fcca");
+    // await message.channel.send(em);
     c.turn = 0;
     c.atk = true;
-    if (args[0] === "auto") {
+    if (auto) {
       c.inputs = false;
       c.lastaction = actions.INPUT;
       // return await attacks(args, message);
@@ -411,12 +450,13 @@ const doPlayersTurn = (combat, player, enemy, crit, action) => {
   return talentmsg + statmsg + msg;
 };
 
-const doBigCombat = (combat, message) => {
+const doBigCombat = async (combat, message) => {
   //nedd 3 msg, turn, combat, end
   //forloop for doing the combat
   let combatMsg = "",
     turnMsg = "",
     endMsg = "";
+  combatMsg = `**${combat.player.name} VS ${combat.enemy.name}**\n`;
   while (combat.checkHp()) {
     combat.player.damage = Math.round(Math.random() * 4 + 0);
     // combat.enemy.damage = Math.round(Math.random() * 1 + 0);
@@ -443,10 +483,12 @@ const doBigCombat = (combat, message) => {
   let color = combat.winner === combat.player.name ? "75f542" : "bf0808";
   const embed = new Discord.MessageEmbed()
     .setColor(color)
-    .setTitle(`${combat.player.name} VS ${combat.enemy.name}`)
+    .setTitle(`A wild ${combat.enemy.name} has appeard!`)
+    .attachFiles(`./gfxs/${combat.enemy.name}.png`)
+    .setThumbnail(`attachment://${combat.enemy.name}.png`)
     .setDescription(combatMsg);
-  message.channel.send(embed);
-  doAftercombat(combat, message);
+  await message.channel.send(embed);
+  return await doAftercombat(combat, message);
 };
 
 const doRpgcombat2 = (combat, message) => {
@@ -528,8 +570,8 @@ const dungeonCombat = (message, monster, dun) => {
     endMsg = "";
   while (combat.checkHp()) {
     combat.player.damage = Math.round(Math.random() * 4 + 0);
-    combat.enemy.damage = 50;
-    // combat.enemy.damage = Math.round(Math.random() * combat.enemy.dmg + 0);
+    // combat.enemy.damage = 50;
+    combat.enemy.damage = Math.round(Math.random() * combat.enemy.dmg + 0);
     let playerAction = playerActions[Math.round(Math.random() * 2 + 0)];
     // let playerAction = playerActions[2];
     let enemyAction =

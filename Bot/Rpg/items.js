@@ -104,6 +104,18 @@ class BasicKey extends MaterialItem {
   }
 }
 
+class Meat extends MaterialItem {
+  constructor(quantity = 1, quality = ItemQuality.NORMAL) {
+    super({ id: 17, name: "Meat", quantity, quality });
+  }
+}
+
+class Honey extends MaterialItem {
+  constructor(quantity = 1, quality = ItemQuality.NORMAL) {
+    super({ id: 18, name: "Honey", quantity, quality });
+  }
+}
+
 class CopperBar extends CraftedItem {
   constructor(quantity = 1) {
     super({
@@ -250,6 +262,16 @@ const itemDictionary = {
     itemClass: BasicKey,
     name: "Basic dungeon key",
     id: 16,
+  }),
+  meat: new ItemDictionaryEntry({
+    itemClass: Meat,
+    name: "Meat",
+    id: 17,
+  }),
+  honey: new ItemDictionaryEntry({
+    itemClass: Honey,
+    name: "Honey",
+    id: 18,
   }),
 };
 

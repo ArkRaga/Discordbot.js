@@ -1,20 +1,30 @@
-class Combat {
-  constructor({ id, player }) {
+class human {
+  constructor({ id, name }) {
     this.id = id;
-    this.player = player;
-    this.player.damage = 0;
+    this.name = name;
+    this.startingHp = 10;
   }
 }
 
-class Player {
+class Jhon extends human {
   constructor({ name, bclass }) {
-    this.name = name;
+    super({ id: 2, name: name });
     this.bclass = bclass;
   }
 }
 
-const p = new Player({ id: 0, name: "tony", bclass: "ironman" });
+class Ging extends human {
+  constructor({ name, bclass }) {
+    super({ id: 3, name: name });
+    this.bclass = bclass;
+  }
+}
 
-const c = new Combat({ id: 0, player: p });
+const jhon = new Jhon({ name: "jhon", bclass: "pirate" });
+const ging = new Ging({ name: "ging", bclass: "Bitty-Kween" });
 
-console.log("CLasss C: ", c);
+console.log(`Jhon: ${jhon.startingHp}, Ging:${ging.startingHp}`);
+
+human.startingHp = 30;
+
+console.log(`Jhon: ${jhon.startingHp}, Ging:${ging.startingHp}`);

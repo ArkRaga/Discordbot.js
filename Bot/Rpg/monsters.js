@@ -18,6 +18,7 @@ class Enemy {
     def = 1,
     attacks = [],
     drops = [],
+    huntItem = false,
   }) {
     this.hp = 10;
     this.id = id;
@@ -28,6 +29,7 @@ class Enemy {
     this.def = def;
     this.attacks = [new skill.Basic(), new skill.Heal(), ...attacks];
     this.drops = drops;
+    this.huntItem = huntItem;
   }
 }
 
@@ -67,6 +69,7 @@ class Wolf extends Enemy {
       drops: [
         new itemDictionary.pelt.itemClass(Math.round(Math.random() * 2 + 1)),
       ],
+      huntItem: new itemDictionary.meat.itemClass(),
     });
   }
 }
@@ -97,6 +100,7 @@ class Bear extends Enemy {
       drops: [
         new itemDictionary.pelt.itemClass(Math.round(Math.random() * 4 + 1)),
       ],
+      huntItem: new itemDictionary.honey.itemClass(),
     });
   }
 }
@@ -106,7 +110,7 @@ const tiger = new Enemy({});
 const monsters = {
   wolf: Wolf,
   bear: Bear,
-  lavagolem: Lavagolem,
+  // lavagolem: Lavagolem,
   mimic: Mimic,
 };
 
