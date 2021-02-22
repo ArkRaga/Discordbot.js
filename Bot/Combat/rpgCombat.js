@@ -92,6 +92,7 @@ class Player {
     this.hp = this.maxHp;
     this.damage = 0;
     this.class = bclass;
+    this.lastAction = "none";
     this.attacks = bclass.attacks;
     this.isAfflicted = false;
     this.affliction = false;
@@ -158,8 +159,12 @@ const setUpCombat = (message, enemy) => {
 
 const hunt = async (args, message, dun = false) => {
   const chestChance = Math.round(Math.random() * 100 + 0) > 80 ? true : false;
+  console.log("rpgcombat-L162- chest chance: ", chestChance);
   // const chestChance = true;
   // args[0] = "auto";
+  if (chestChance) {
+    return await foundChest(args, message);
+  }
   const auto = true;
   let enemy = Object.keys(monsters)[
     Math.floor(Math.random() * (Object.keys(monsters).length - 1))
@@ -199,12 +204,10 @@ const hunt = async (args, message, dun = false) => {
   }
 
   // console.log("Rpgcombat-L168- Enemy: ", enemy);
+  enemy = "wolf";
   const c = setUpCombat(message, enemy);
   if (dun) {
     c.dun = dun;
-  }
-  if (chestChance) {
-    return foundChest(args, c, message);
   }
   if (combats.addcombat(c)) {
     // let emn = require("../embeds");
@@ -244,14 +247,14 @@ const hunt = async (args, message, dun = false) => {
   }
 };
 
-const foundChest = async (args, c, message) => {
+const foundChest = async (args, message) => {
   let emn = require("../embeds");
   let em = emn.rpgComabtEmbed;
   em.files = [];
   const mimicChance = Math.round(Math.random() * 100 + 0) > 95 ? true : false;
   if (mimicChance) {
+    let c = setUpCombat(message, new monsters.mimic());
     if (combats.addcombat(c)) {
-      c.enemy = new monsters.mimic();
       em.setTitle(`A wild  ${c.enemy.name} has appeard `);
       em.attachFiles(`./gfxs/${c.enemy.name}.png`).setImage(
         `attachment://${c.enemy.name}.png`
@@ -304,10 +307,7 @@ const foundChest = async (args, c, message) => {
   let msg2 = `${item1.name} x${item1.quantity}\n`;
   let msg3 = `${item2.name} x${item2.quantity}\n`;
   em.setDescription(msg1 + msg2 + msg3);
-  if (c.dun) {
-    await message.channel.send(em);
-    return await dungeonCommands.onRoomDone(message);
-  }
+  await message.channel.send(em);
 };
 
 const attacks = (args, message) => {
@@ -349,6 +349,25 @@ const attacks = (args, message) => {
   // message.channel.send(`you inputted ${args.length} inputs.`);
 };
 
+const doEnemyDrop = (message, combat) => {
+  let n = Math.round(Math.random() * (combat.enemy.drops.length - 1));
+  let msg = "";
+  inventorys.addInventory(message.author.id, message.author.username);
+  const inven = inventorys.getInventory(message.author.id);
+  if (combat.enemy.drops.length > 1) {
+    combat.enemy.drops.forEach((x, i) => {
+      if (i === n) {
+        msg += ` **${x.name}** x${x.quantity}\n`;
+        inven.addItem(x);
+      }
+    });
+  } else {
+    inven.addItem(combat.enemy.drops[0]);
+    msg += ` **${combat.enemy.drops[0].name}** x${combat.enemy.drops[0].quantity}\n`;
+  }
+  return msg;
+};
+
 const doAftercombat = async (combat, message) => {
   const emn = require("../embeds");
   const em = Object.create(emn.rpgCombatEndEmbed);
@@ -361,12 +380,7 @@ const doAftercombat = async (combat, message) => {
     if (combat.winner == combat.player.name) {
       em.setTitle(`${combat.winner} has won the fight`);
       let msg1 = "you gained: \n";
-      inventorys.addInventory(message.author.id, message.author.username);
-      const inven = inventorys.getInventory(message.author.id);
-      combat.enemy.drops.forEach((x) => {
-        msg1 += ` **${x.name}** x${x.quantity}\n`;
-        inven.addItem(x);
-      });
+      msg1 += doEnemyDrop(message, combat);
       em.setDescription(msg1);
       if (combat.dun) {
         await message.channel.send(em);
@@ -403,28 +417,23 @@ const doAftercombat = async (combat, message) => {
   }
 };
 
-const doPlayersTurn = (combat, player, enemy, crit, action) => {
+const doPlayersTurn = (combat, player, enemy, crit) => {
   let msg;
   let statmsg = "";
   let talentmsg = "";
   let dmg = combat[player].damage;
-  if (combat[player].class) {
-    if (combat[player].class.talent.doTalent(combat, player)) {
-      talentmsg = combat[player].class.talent.msg;
-    }
-  }
 
   if (combat[player].isAfflicted) {
     statmsg = combat[player].affliction.doStatus(combat, player);
   }
-
-  switch (action) {
+  switch (combat.player.lastAction) {
     case "attack":
       msg = combat[player].attacks[0].doSkill(combat, player, enemy);
       break;
     case "defend":
       if (combat[player].hasHealed) {
         msg = combat[player].attacks[0].doSkill(combat, player, enemy);
+        combat[player].lastAction = "attack";
       } else {
         combat[player].hasHealed = true;
         msg = combat[player].attacks[1].doSkill(combat, player, enemy);
@@ -434,16 +443,23 @@ const doPlayersTurn = (combat, player, enemy, crit, action) => {
       msg = combat[player].attacks[2].doSkill(combat, player, enemy);
       break;
     default:
-      action = "attack";
+      combat.player.lastAction = "attack";
       msg = combat[player].attacks[0].doSkill(combat, player, enemy);
       break;
   }
-  if (crit && action == "attack") {
+
+  if (combat[player].class) {
+    if (combat[player].class.talent.doTalent(combat, player)) {
+      talentmsg = combat[player].class.talent.msg;
+    }
+  }
+
+  if (crit && combat.player.lastAction == "attack") {
     combat[player].damage += 1;
     combat[enemy].hp -= 1;
     msg = `${combat[player].name} has **critted** for ${combat[player].damage}\n`;
   }
-  if (combat[player].damage === 0 && action !== "defend") {
+  if (combat[player].damage === 0 && combat.player.lastAction !== "defend") {
     msg = `${combat[player].name} missed \n`;
   }
   combat[player].damage = 0;
@@ -461,21 +477,20 @@ const doBigCombat = async (combat, message) => {
     combat.player.damage = Math.round(Math.random() * 4 + 0);
     // combat.enemy.damage = Math.round(Math.random() * 1 + 0);
     combat.enemy.damage = Math.round(Math.random() * combat.enemy.dmg + 0);
-    let playerAction = playerActions[Math.round(Math.random() * 2 + 0)];
+    combat.player.lastAction = playerActions[Math.round(Math.random() * 2 + 0)];
     // let playerAction = playerActions[2];
-    let enemyAction =
+    combat.enemy.lastAction =
       Math.round(Math.random() * 100) > 75 ? enemyActions[1] : enemyActions[0];
     let playercrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
     let enemycrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
-
     combat.changeTurn();
     turnMsg = combat.turn;
     //do both peoples turns
     combatMsg +=
       `\n` +
       `Turn: ${combat.turn}\n` +
-      doPlayersTurn(combat, "player", "enemy", playercrit, playerAction) +
-      doPlayersTurn(combat, "enemy", "player", enemycrit, enemyAction) +
+      doPlayersTurn(combat, "player", "enemy", playercrit) +
+      doPlayersTurn(combat, "enemy", "player", enemycrit) +
       `${combat.player.name} Hp: ${combat.player.hp} \\|| ${combat.enemy.name} Hp: ${combat.enemy.hp}\n`;
     //add to the message
   }

@@ -75,7 +75,7 @@ class Startclass extends CharClass {
       damage: 3,
       gfx: { main: "StartClass.png" },
       quip: { start: "Im so lost.", end: "I shouldnt even be here" },
-      talent: new talents.HealOnTurn(),
+      talent: new talents.Combo(),
     });
   }
   doReset() {

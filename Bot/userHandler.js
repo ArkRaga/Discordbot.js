@@ -70,7 +70,7 @@ const pickclass = async (args, message) => {
 const classdetails = async (args, message) => {
   let em = require("./embeds").classEmbed;
   if (args.length > 0) {
-    let userclass = classes[args[0].toLowerCase()];
+    let userclass = new classes[args[0].toLowerCase()]();
     if (!userclass) {
       return await message.channel.send("Sorry you didnt enter a vaild class");
     }

@@ -68,6 +68,9 @@ class Wolf extends Enemy {
       ],
       drops: [
         new itemDictionary.pelt.itemClass(Math.round(Math.random() * 2 + 1)),
+        new itemDictionary.sharptooth.itemClass(
+          Math.round(Math.random() * 1 + 1)
+        ),
       ],
       huntItem: new itemDictionary.meat.itemClass(),
     });

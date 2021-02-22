@@ -176,28 +176,31 @@ const addinv = async (args, message) => {
   message.channel.send("it has be done");
 };
 
-const item = (args, message) => {
+const item = async (args, message) => {
   switch (args[0]) {
     case "name": {
       let SelectedItem = itemDictionary[args[1]].itemClass;
-      message.channel.send(itemEmbed(new SelectedItem()));
+      await message.channel.send(itemEmbed(new SelectedItem()));
       break;
     }
     case "id": {
       for (i in itemDictionary) {
         if (itemDictionary[i].id == args[1]) {
           let SelectedItem = itemDictionary[i].itemClass;
-          message.channel.send(itemEmbed(new SelectedItem()));
+          await message.channel.send(itemEmbed(new SelectedItem()));
         }
       }
       break;
     }
     default: {
+      if (!itemDictionary[args[0]]) {
+        return await message.channel.send("no item found please try again");
+      }
       let SelectedItem = itemDictionary[args[0]].itemClass;
       if (SelectedItem) {
-        message.channel.send(itemEmbed(new SelectedItem()));
+        await message.channel.send(itemEmbed(new SelectedItem()));
       } else {
-        message.channel.send("no item found please try again");
+        await message.channel.send("no item found please try again");
       }
       break;
     }
