@@ -159,9 +159,6 @@ const setUpCombat = (message, enemy) => {
 
 const hunt = async (args, message, dun = false) => {
   const chestChance = Math.round(Math.random() * 100 + 0) > 80 ? true : false;
-  console.log("rpgcombat-L162- chest chance: ", chestChance);
-  // const chestChance = true;
-  // args[0] = "auto";
   if (chestChance) {
     return await foundChest(args, message);
   }
@@ -210,15 +207,6 @@ const hunt = async (args, message, dun = false) => {
     c.dun = dun;
   }
   if (combats.addcombat(c)) {
-    // let emn = require("../embeds");
-    // let em = Object.create(emn.basicEmbed);
-    // em.files = [];
-    // em.setTitle(`A wild  ${c.enemy.name} has appeard `);
-    // em.attachFiles(`./gfxs/${c.enemy.name}.png`).setImage(
-    //   `attachment://${c.enemy.name}.png`
-    // );
-    // em.setColor("03fcca");
-    // await message.channel.send(em);
     c.turn = 0;
     c.atk = true;
     if (auto) {

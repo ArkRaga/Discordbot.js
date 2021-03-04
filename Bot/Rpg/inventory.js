@@ -140,6 +140,13 @@ const getDropBy = (item) => {
     Commnads
  ////*/
 const craft = async (args, message) => {
+  if (args.length <= 0) {
+    return await message.channel.send("please enter an item to craft");
+  } else {
+    if (!itemDictionary[args[0]]) {
+      return await message.channel.send("sorry invaild item");
+    }
+  }
   let item = new itemDictionary[args[0]].itemClass();
   let inv = inventorys.getInventory(message.author.id);
   let canCraft = true;

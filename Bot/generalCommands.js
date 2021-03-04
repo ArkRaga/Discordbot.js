@@ -1,5 +1,8 @@
 const users = require("./userHandler").users;
+const axios = require("axios");
 const Discord = require("discord.js");
+
+const url = "http://localhost:3000/api/";
 
 const ping = async (args, message) => {
   await message.channel.send(`${message.author.toString()}, dont bother me`);
@@ -92,16 +95,9 @@ const playchess = async (args, message) => {
 };
 
 const say = async (args, message) => {
-  const em2 = new Discord.MessageEmbed()
-    .setColor()
-    .setTitle("Im the seccond embed")
-    .setDescription("Do the roar");
-  const em1 = new Discord.MessageEmbed()
-    .setColor()
-    .setTitle("Main embed")
-    .setDescription(`${em2.title}, ${em2.description}`);
-
-  return await message.channel.send(em1);
+  const databaseing = require("./databaseing");
+  databaseing.StartUp();
+  return await message.channel.send("booyaka");
 };
 
 const closeRoyal = (args, message) => {

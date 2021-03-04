@@ -10,6 +10,9 @@ const handleUsers = require("./Bot/userHandler").handleUsers;
 
 client.once("ready", () => {
   console.log("Ready!");
+  const db = require("./Bot/databaseing");
+  db.StartUp();
+  //run the start up quere for getting users
 });
 
 client.on("message", (message) => {

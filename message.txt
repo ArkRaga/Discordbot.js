@@ -177,3 +177,20 @@ const dungeonCombat = async (message, monster) => {
     return await message.channel.send(em);
   }
 };
+
+
+
+
+
+
+get guild roles, and check is someone has a role by id or name
+ console.log(message.guild.roles.cache.get(message.member._roles[0]).name);
+  let m = "";
+  message.guild.roles.cache.forEach((ele) => {
+    m += `${ele.name}\n`;
+  });
+  console.log(m);
+  if (message.member._roles.find((x) => x == "605886438147489795")) {
+    message.channel.send("yeah you got it");
+  }
+  return console.log(message.member._roles);

@@ -1,9 +1,15 @@
 let classes = require("./Rpg/rpgClasses");
+const axios = require("axios");
+const { Guild } = require("discord.js");
+const url = "http://localhost:3000/api/";
 /// username, discordId, Class, battlepoints,
 
 class userHandler {
   constructor() {
     this.users = [];
+  }
+  setUsers(arr) {
+    this.users = arr;
   }
   addUser(author) {
     if (!this.hasUser(author.id)) {
@@ -14,9 +20,22 @@ class userHandler {
           bclass: new classes.startclass(),
         })
       );
+      // add user to the database
+      const body = {
+        username: author.username,
+      };
+      axios
+        .post(url + `add/${author.id}`, body)
+        .then((res) => {
+          console.log("Res: ", res.data);
+        })
+        .catch((err) => {
+          console.log("there has been an issue");
+        });
     }
   }
   getUser(id) {
+    console.log("getUSer id userhandler-L37: ", id);
     return this.users.find((x) => x.id === id);
   }
   hasUser(id) {
@@ -25,10 +44,10 @@ class userHandler {
 }
 
 class User {
-  constructor({ id, name, bclass }) {
+  constructor({ id, name, bclass, battlepoints = 5 }) {
     this.id = id;
     this.name = name;
-    (this.class = bclass), (this.battlepoints = 5);
+    (this.class = bclass), (this.battlepoints = battlepoints);
   }
   changeClass(bclass) {
     this.class = bclass;
@@ -45,7 +64,7 @@ const handleUsers = (author) => {
 };
 
 const printusers = () => {
-  console.log("Users");
+  console.log("Users", userhandler.users);
 };
 
 const pickclass = async (args, message) => {
@@ -140,8 +159,23 @@ const changeclass = async (args, message) => {
     });
 };
 
+const addme = (args, message) => {
+  const body = {
+    username: message.author.username,
+  };
+  axios
+    .post(url + `add/${message.author.id}`, body)
+    .then((res) => {
+      console.log("Res: ", res.data);
+    })
+    .catch((err) => {
+      console.log("there has been an issue");
+    });
+};
+
 const printme = async (args, message) => {
   let em = require("./embeds").user2Embed;
+  // console.log("printme-id: ", message.author);
   let user = userhandler.getUser(message.author.id);
   if (!user) {
     return await message.channel.send("none found");
@@ -159,9 +193,11 @@ const dic = {
   pickclass,
   classdetails,
   changeclass,
+  addme,
 };
 
 exports.users = userhandler.users;
 exports.handleUsers = handleUsers;
 module.exports.userhandler = userhandler;
+module.exports.User = User;
 exports.dic = dic;

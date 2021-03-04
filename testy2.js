@@ -1,3 +1,4 @@
-let arr = [5, 6, 7];
+const str = "595632750342570000";
+const num = 595632750342570000;
 
-console.log(arr.length);
+console.log(str.length);
