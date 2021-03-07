@@ -96,7 +96,16 @@ const playchess = async (args, message) => {
 
 const say = async (args, message) => {
   const databaseing = require("./databaseing");
-  databaseing.StartUp();
+  const { inventorys } = require("./Rpg/inventory");
+  if (inventorys.hasInventory(message.author.id)) {
+    console.log("has");
+  } else {
+    console.log("doesnt have");
+  }
+
+  databaseing
+    .getUsersInv(message.author.id)
+    .then((ele) => console.log("here is the ele: ", ele));
   return await message.channel.send("booyaka");
 };
 

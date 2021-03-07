@@ -1,7 +1,8 @@
 // const inventorys = [];
-const { items, itemDictionary } = require("./items");
+const { itemDictionary } = require("./items");
 const fs = require("fs");
 const { ItemTypes } = require("./items");
+const database = require("../databaseing");
 
 /*
 iventory:
@@ -13,7 +14,6 @@ iventory:
 commnads
 add,edit,delete
 */
-
 class userInventory {
   constructor({ id, name }) {
     this.id = id;
@@ -27,8 +27,17 @@ class userInventory {
     if (this.hasItem(item)) {
       const i = this.getItem(item);
       i.quantity += item.quantity;
+      //change quantity in database
+      let itm = {
+        player_id: this.id,
+        item_id: item.id,
+        item_quantity: i.quantity,
+      };
+      database.updateItemInDatabase(itm);
     } else {
       this.items.push(item);
+      // add item to database
+      database.addUserItemToDatabase(this.id, item);
     }
   }
   hasItem(healingCombatPowerModifier) {
@@ -72,7 +81,7 @@ class usersInventoryHandler {
     }
   }
   hasInventory(id) {
-    return this.inventories.some((x) => x.id === id);
+    return this.inventories.some((x) => x.id == id);
   }
   getInventory(id) {
     const i = this.inventories.find((x) => x.id === id);
@@ -83,7 +92,41 @@ class usersInventoryHandler {
   }
 }
 
+const startUp = async () => {
+  let u;
+  let invs;
+  await database
+    .getAllUsers()
+    .then((users) => (u = users))
+    .catch((err) => console.log("err gettins users"));
+  await database
+    .getAllInv()
+    .then((inv) => (invs = inv))
+    .catch((err) => console.log("err getting invs"));
+
+  // console.log("heres U: ", u);
+  // console.log("heres I: ", i);
+  u.forEach((users) => {
+    let arr = invs.filter((inv_item) => inv_item.player_id == users.discordId);
+    if (arr.length > 0) {
+      inventorys.addInventory(users.discordId, users.username);
+      arr.forEach((item) => {
+        for (i in itemDictionary) {
+          if (itemDictionary[i].id == item.item_id) {
+            inventorys
+              .getInventory(item.player_id)
+              .items.push(new itemDictionary[i]());
+          }
+        }
+      });
+    }
+  });
+  console.log(" Inventories L118-Done");
+};
+
 const inventorys = new usersInventoryHandler();
+// console.log("inv");
+startUp();
 
 const itemEmbed = (item) => {
   let emn = require("../embeds");
@@ -147,7 +190,7 @@ const craft = async (args, message) => {
       return await message.channel.send("sorry invaild item");
     }
   }
-  let item = new itemDictionary[args[0]].itemClass();
+  let item = new itemDictionary[args[0]]();
   let inv = inventorys.getInventory(message.author.id);
   let canCraft = true;
   if (!item) {
@@ -186,14 +229,14 @@ const addinv = async (args, message) => {
 const item = async (args, message) => {
   switch (args[0]) {
     case "name": {
-      let SelectedItem = itemDictionary[args[1]].itemClass;
+      let SelectedItem = itemDictionary[args[1]];
       await message.channel.send(itemEmbed(new SelectedItem()));
       break;
     }
     case "id": {
       for (i in itemDictionary) {
         if (itemDictionary[i].id == args[1]) {
-          let SelectedItem = itemDictionary[i].itemClass;
+          let SelectedItem = itemDictionary[i];
           await message.channel.send(itemEmbed(new SelectedItem()));
         }
       }
@@ -203,7 +246,7 @@ const item = async (args, message) => {
       if (!itemDictionary[args[0]]) {
         return await message.channel.send("no item found please try again");
       }
-      let SelectedItem = itemDictionary[args[0]].itemClass;
+      let SelectedItem = itemDictionary[args[0]];
       if (SelectedItem) {
         await message.channel.send(itemEmbed(new SelectedItem()));
       } else {
@@ -235,6 +278,9 @@ const removeinvitem = (args, message) => {
 
 const myinv = (args, message) => {
   // inventorys.printUserInventory(message.author.id);
+  if (!inventorys.hasInventory(message.author.id)) {
+    return message.channel.send("you have no items");
+  }
   const inven = inventorys.getInventory(message.author.id);
   let emn = require("../embeds");
   let em = Object.create(emn.invEmbed);
@@ -253,7 +299,7 @@ const myinv = (args, message) => {
 
 const giveitem = (args, message) => {
   let userinv;
-  let item = new itemDictionary[args[0]].itemClass();
+  let item = new itemDictionary[args[0]]();
   if (!inventorys.getInventory(message.author.id)) {
     inventorys.addInventory(message.author.id, message.author.username);
   }
@@ -276,7 +322,7 @@ const giveitem = (args, message) => {
 };
 
 const printinv = (args, message) => {
-  console.log("inv: ", inventorys);
+  console.log("inv: ", inventorys.inventories);
 };
 
 const printinvitems = (args, message) => {

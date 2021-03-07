@@ -51,72 +51,84 @@ class CraftedItem extends Item {
 }
 
 class Pelt extends MaterialItem {
+  static id = 1;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 1, name: "Pelt", quality, quantity });
   }
 }
 
 class SharpTooth extends MaterialItem {
+  static id = 2;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 2, name: "Sharp Tooth", quality, quantity });
   }
 }
 
 class WolfBlood extends MaterialItem {
+  static id = 3;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 3, name: "Vial Wolf Blood", quality, quantity });
   }
 }
 
 class BearPaw extends MaterialItem {
+  static id = 4;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 4, name: "Bear Paw", quality, quantity });
   }
 }
 
 class CopperOre extends MaterialItem {
+  static id = 6;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 6, name: "Copper Ore", quality, quantity });
   }
 }
 
 class IronOre extends MaterialItem {
+  static id = 7;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 7, name: "Iron Ore", quality, quantity });
   }
 }
 
 class LavaOre extends MaterialItem {
+  static id = 8;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 8, name: "Lava Ore", quality, quantity });
   }
 }
 
 class Obsidian extends MaterialItem {
+  static id = 9;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 9, name: "Obsidian", quality, quantity });
   }
 }
 
 class BasicKey extends MaterialItem {
+  static id = 16;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 16, name: "Basic dungeon key", quality, quantity });
   }
 }
 
 class Meat extends MaterialItem {
+  static id = 17;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 17, name: "Meat", quantity, quality });
   }
 }
 
 class Honey extends MaterialItem {
+  static id = 18;
   constructor(quantity = 1, quality = ItemQuality.NORMAL) {
     super({ id: 18, name: "Honey", quantity, quality });
   }
 }
 
 class CopperBar extends CraftedItem {
+  static id = 10;
   constructor(quantity = 1) {
     super({
       id: 10,
@@ -128,6 +140,7 @@ class CopperBar extends CraftedItem {
 }
 
 class IronBar extends CraftedItem {
+  static id = 11;
   constructor(quantity) {
     super({
       id: 11,
@@ -139,21 +152,25 @@ class IronBar extends CraftedItem {
 }
 
 class GoodPelt extends CraftedItem {
+  static id = 12;
   constructor(quantity) {
     super({ id: 12, name: "Good Pelt", quantity, mats: [new Pelt(3)] });
   }
 }
 class GreatPelt extends CraftedItem {
+  static id = 13;
   constructor(quantity) {
     super({ id: 13, name: "Great Pelt", quantity, mats: [new GoodPelt(3)] });
   }
 }
 class PerfectPelt extends CraftedItem {
+  static id = 14;
   constructor(quantity) {
     super({ id: 14, name: "Perfect Pelt", quantity, mats: [new GreatPelt(3)] });
   }
 }
 class MarvellousPelt extends CraftedItem {
+  static id = 15;
   constructor(quantity) {
     super({
       id: 15,
@@ -165,6 +182,7 @@ class MarvellousPelt extends CraftedItem {
 }
 
 class FurArmor extends CraftedItem {
+  static id = 0;
   constructor() {
     super({
       id: 0,
@@ -175,6 +193,7 @@ class FurArmor extends CraftedItem {
 }
 
 class MetalArmor extends CraftedItem {
+  static id = 5;
   constructor() {
     super({
       id: 5,
@@ -193,86 +212,22 @@ class ItemDictionaryEntry {
 }
 
 const itemDictionary = {
-  pelt: new ItemDictionaryEntry({
-    itemClass: Pelt,
-    name: "Pelt",
-    id: 1,
-  }),
-  sharptooth: new ItemDictionaryEntry({
-    itemClass: SharpTooth,
-    name: "Sharp Tooth",
-    id: 2,
-  }),
-  wolfblood: new ItemDictionaryEntry({
-    itemClass: WolfBlood,
-    name: "Wolf Blood",
-    id: 3,
-  }),
-  bearpaw: new ItemDictionaryEntry({
-    itemClass: BearPaw,
-    name: "Bear Paw",
-    id: 4,
-  }),
-  furarmor: new ItemDictionaryEntry({
-    itemClass: FurArmor,
-    name: "Fur Armor",
-    id: 0,
-  }),
-  metalarmor: new ItemDictionaryEntry({
-    itemClass: MetalArmor,
-    name: "Metal Armor",
-    id: 5,
-  }),
-  copperore: new ItemDictionaryEntry({
-    itemClass: CopperOre,
-    name: "Copper Ore",
-    id: 6,
-  }),
-  ironore: new ItemDictionaryEntry({
-    itemClass: IronOre,
-    name: "Iron Ore",
-    id: 7,
-  }),
-  lavaore: new ItemDictionaryEntry({
-    itemClass: LavaOre,
-    name: "Lava Ore",
-    id: 8,
-  }),
-  obsidian: new ItemDictionaryEntry({
-    itemClass: Obsidian,
-    name: "Obsidian",
-    id: 9,
-  }),
-  copperbar: new ItemDictionaryEntry({
-    itemClass: CopperBar,
-    name: "Copper Bar",
-    id: 10,
-  }),
-  ironbar: new ItemDictionaryEntry({
-    itemClass: IronBar,
-    name: "Iron Bar",
-    id: 11,
-  }),
-  goodpelt: new ItemDictionaryEntry({
-    itemClass: GoodPelt,
-    name: "Good Pelt",
-    id: 12,
-  }),
-  basickey: new ItemDictionaryEntry({
-    itemClass: BasicKey,
-    name: "Basic dungeon key",
-    id: 16,
-  }),
-  meat: new ItemDictionaryEntry({
-    itemClass: Meat,
-    name: "Meat",
-    id: 17,
-  }),
-  honey: new ItemDictionaryEntry({
-    itemClass: Honey,
-    name: "Honey",
-    id: 18,
-  }),
+  pelt: Pelt,
+  sharptooth: SharpTooth,
+  wolfblood: WolfBlood,
+  bearpaw: BearPaw,
+  furarmor: FurArmor,
+  metalarmor: MetalArmor,
+  copperore: CopperOre,
+  ironore: IronOre,
+  lavaore: LavaOre,
+  obsidian: Obsidian,
+  copperbar: CopperBar,
+  ironbar: IronBar,
+  goodpelt: GoodPelt,
+  basickey: BasicKey,
+  meat: Meat,
+  honey: Honey,
 };
 
 module.exports.items = { Pelt, FurArmor, SharpTooth };

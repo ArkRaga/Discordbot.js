@@ -1,4 +1,3 @@
-const str = "595632750342570000";
-const num = 595632750342570000;
+const { itemDictionary } = require("./Bot/Rpg/items");
 
-console.log(str.length);
+console.log(itemDictionary.pelt.id);

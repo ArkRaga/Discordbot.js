@@ -43,10 +43,7 @@ class Mimic extends Enemy {
       speed: 0,
       def: 0,
       attacks: [skill.basic],
-      drops: [
-        new itemDictionary.copperbar.itemClass(2),
-        new itemDictionary.obsidian.itemClass(1),
-      ],
+      drops: [new itemDictionary.copperbar(2), new itemDictionary.obsidian(1)],
     });
   }
 }
@@ -67,12 +64,10 @@ class Wolf extends Enemy {
         new skill.Roar(),
       ],
       drops: [
-        new itemDictionary.pelt.itemClass(Math.round(Math.random() * 2 + 1)),
-        new itemDictionary.sharptooth.itemClass(
-          Math.round(Math.random() * 1 + 1)
-        ),
+        new itemDictionary.pelt(Math.round(Math.random() * 2 + 1)),
+        new itemDictionary.sharptooth(Math.round(Math.random() * 1 + 1)),
       ],
-      huntItem: new itemDictionary.meat.itemClass(),
+      huntItem: new itemDictionary.meat(),
     });
   }
 }
@@ -100,10 +95,8 @@ class Bear extends Enemy {
       speed: 2,
       def: 3,
       attacks: [new skill.Swipe(), new skill.Roar()],
-      drops: [
-        new itemDictionary.pelt.itemClass(Math.round(Math.random() * 4 + 1)),
-      ],
-      huntItem: new itemDictionary.honey.itemClass(),
+      drops: [new itemDictionary.pelt(Math.round(Math.random() * 4 + 1))],
+      huntItem: new itemDictionary.honey(),
     });
   }
 }
