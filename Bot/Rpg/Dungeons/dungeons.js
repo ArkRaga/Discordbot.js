@@ -25,7 +25,7 @@ class Dungeon {
 class TestDungeon extends Dungeon {
   constructor() {
     super(false);
-    this.key = new itemDictionary.basickey();
+    this.key = [];
     this.msg = "Welcome to test dungeon, im but a mere test.!";
   }
 }
@@ -34,14 +34,9 @@ const td = new TestDungeon();
 const tier1 = [
   new rooms.BasicRoom([2, 3], 1),
   new rooms.CombatRoom([5], 2, new monsters.wolf()),
-  new rooms.TreasureRoom([5, 4], 3, new itemDictionary.sharptooth(3)),
+  new rooms.TreasureRoom([5, 4], 3),
   new rooms.BasicRoom([5], 4),
-  new rooms.BossRoom(
-    false,
-    5,
-    new monsters.bear(),
-    new itemDictionary.metalarmor()
-  ),
+  new rooms.BossRoom(false, 5, new monsters.bear()),
 ];
 td.addRoom(tier1);
 module.exports.td = td;

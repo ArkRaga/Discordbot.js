@@ -1,6 +1,6 @@
 let classes = require("./Rpg/rpgClasses");
 const axios = require("axios");
-const { Guild } = require("discord.js");
+
 const url = "http://localhost:3000/api/";
 /// username, discordId, Class, battlepoints,
 
@@ -56,17 +56,14 @@ class User {
     this.battlepoints += num;
   }
 }
-
 let userhandler = new userHandler();
 // console.log("users");
 const handleUsers = (author) => {
   userhandler.addUser(author);
 };
-
 const printusers = () => {
   console.log("Users", userhandler.users);
 };
-
 const pickclass = async (args, message) => {
   let user = userHandler.getUser(message.author.id);
   if (user.class.name != classes.startclass.name) {
@@ -85,7 +82,6 @@ const pickclass = async (args, message) => {
 
   await message.channel.send(`your class is now a : **${picked.name}**`);
 };
-
 const classdetails = async (args, message) => {
   let em = require("./embeds").classEmbed;
   if (args.length > 0) {
@@ -121,7 +117,6 @@ const classdetails = async (args, message) => {
     em.files = [];
   }
 };
-
 const changeclass = async (args, message) => {
   let id = message.author.id;
   let user = userhandler.getUser(id);
@@ -158,7 +153,6 @@ const changeclass = async (args, message) => {
       message.reply("there has been an err");
     });
 };
-
 const addme = (args, message) => {
   const body = {
     username: message.author.username,

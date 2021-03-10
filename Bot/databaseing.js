@@ -25,8 +25,8 @@ const getUserFromDatabase = () => {
       //   console.log("L22-users after axios", userhandler.users);
     })
     .catch((err) => {
-      console.log("there has been an err Databaseing-L12");
-      console.log("err: ", err);
+      console.log("err getting users from database Databaseing-L28");
+      // console.log("err: ", err);
     });
 };
 const getAllUsers = () => {
@@ -38,11 +38,10 @@ const getAllUsers = () => {
       return users.data;
     })
     .catch((err) => {
-      console.log("there has been an err Databaseing-L12");
-      console.log("err: ", err);
+      console.log("err getting all users Databaseing-L41");
+      // console.log("err: ", err);
     });
 };
-
 const getUsersInv = async (id) => {
   // get the data
   //loop thur data create items from each ele
@@ -62,7 +61,6 @@ const getUsersInv = async (id) => {
       console.log("There has been an error geting the users inventory");
     });
 };
-
 const addUserItemToDatabase = (id, item) => {
   const ele = { item_id: item.id, item_quantity: item.quantity };
   axios
@@ -74,14 +72,12 @@ const addUserItemToDatabase = (id, item) => {
       console.log("there has been an issue adding an item to the database");
     });
 };
-
 const updateItemInDatabase = (item) => {
   axios
     .put(baseUrl + "/inv/item", item)
     .then()
     .catch((err) => console.log("Err updateing item"));
 };
-
 const getAllInv = () => {
   return axios
     .get(baseUrl + "/inv/all")
@@ -90,13 +86,22 @@ const getAllInv = () => {
     })
     .catch((err) => console.log("err getting all invs"));
 };
-
+const getAllItems = () => {
+  return axios
+    .get(baseUrl + `/item/all`)
+    .then((items) => {
+      return items.data;
+    })
+    .catch((err) => {
+      console.log("err getting items");
+    });
+};
 const StartUp = async () => {
   //get the users from the database
   //add them as users to the userhandler arr for the bot
   //format the data properly
   await getUserFromDatabase();
-  console.log("databaseing L33-done");
+  console.log("databaseing L99-done");
 };
 
 const dic = {
@@ -107,6 +112,6 @@ const dic = {
   getAllInv,
   getAllUsers,
   updateItemInDatabase,
+  getAllItems,
 };
-
 module.exports = dic;

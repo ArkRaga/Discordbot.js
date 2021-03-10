@@ -106,6 +106,11 @@ const startUp = async () => {
 
   // console.log("heres U: ", u);
   // console.log("heres I: ", i);
+  return;
+
+  if (!u) {
+    return;
+  }
   u.forEach((users) => {
     let arr = invs.filter((inv_item) => inv_item.player_id == users.discordId);
     if (arr.length > 0) {
@@ -113,9 +118,9 @@ const startUp = async () => {
       arr.forEach((item) => {
         for (i in itemDictionary) {
           if (itemDictionary[i].id == item.item_id) {
-            inventorys
-              .getInventory(item.player_id)
-              .items.push(new itemDictionary[i]());
+            const itm = new itemDictionary[i]();
+            itm.quantity = item.item_quantity;
+            inventorys.getInventory(item.player_id).items.push(itm);
           }
         }
       });
@@ -134,13 +139,14 @@ const itemEmbed = (item) => {
   // em.files = [];
   // em.fields = [];
 
-  if (item.type == ItemTypes.MATERIAL) {
+  if (item.type == "material") {
     em = Object.create(emn.itemEmbed);
     em.fields[0].value = item.name;
     em.fields[1].value = "Material";
     em.fields[2].value = getDropBy(item);
+    // em.fields[2].value = "null for now";
   }
-  if (item.type == ItemTypes.CRAFTEDITEM) {
+  if (item.type == "crafteditem") {
     em = Object.create(emn.crafteditemEmbed);
     em.fields[0].value = item.name;
     em.fields[1].value = "Crafted item";
@@ -149,6 +155,7 @@ const itemEmbed = (item) => {
     em.fields[2].value = m;
     em.fields[2].inline = true;
     em.fields[3].value = getDropBy(item);
+    // em.fields[3].value = "null for now";
     em.fields[3].inline = true;
   }
   if (fs.existsSync(`./gfxs/${item.name}.png`)) {
@@ -230,14 +237,14 @@ const item = async (args, message) => {
   switch (args[0]) {
     case "name": {
       let SelectedItem = itemDictionary[args[1]];
-      await message.channel.send(itemEmbed(new SelectedItem()));
+      await message.channel.send(itemEmbed(SelectedItem));
       break;
     }
     case "id": {
       for (i in itemDictionary) {
         if (itemDictionary[i].id == args[1]) {
           let SelectedItem = itemDictionary[i];
-          await message.channel.send(itemEmbed(new SelectedItem()));
+          await message.channel.send(itemEmbed(SelectedItem));
         }
       }
       break;
@@ -248,7 +255,7 @@ const item = async (args, message) => {
       }
       let SelectedItem = itemDictionary[args[0]];
       if (SelectedItem) {
-        await message.channel.send(itemEmbed(new SelectedItem()));
+        await message.channel.send(itemEmbed(SelectedItem));
       } else {
         await message.channel.send("no item found please try again");
       }
