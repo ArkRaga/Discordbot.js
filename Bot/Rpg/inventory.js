@@ -33,7 +33,7 @@ class userInventory {
         item_id: item.id,
         item_quantity: i.quantity,
       };
-      database.updateItemInDatabase(itm);
+      database.updateItemInDatabase(this.id, itm);
     } else {
       this.items.push(item);
       // add item to database
@@ -106,7 +106,6 @@ const startUp = async () => {
 
   // console.log("heres U: ", u);
   // console.log("heres I: ", i);
-  return;
 
   if (!u) {
     return;
@@ -118,7 +117,7 @@ const startUp = async () => {
       arr.forEach((item) => {
         for (i in itemDictionary) {
           if (itemDictionary[i].id == item.item_id) {
-            const itm = new itemDictionary[i]();
+            const itm = itemDictionary[i];
             itm.quantity = item.item_quantity;
             inventorys.getInventory(item.player_id).items.push(itm);
           }
@@ -306,7 +305,8 @@ const myinv = (args, message) => {
 
 const giveitem = (args, message) => {
   let userinv;
-  let item = new itemDictionary[args[0]]();
+  let item = itemDictionary.createDrop(args[0], 1);
+  console.log("L-309-giveitem: ", item);
   if (!inventorys.getInventory(message.author.id)) {
     inventorys.addInventory(message.author.id, message.author.username);
   }

@@ -145,6 +145,7 @@ const setUpCombat = (message, enemy) => {
     name: message.author.username,
     bclass: userhandler.getUser(message.author.id).class,
   });
+  // console.log("L148-rpgcombat: ", p);
   const en = new monsters[enemy]();
   en.damage = 0;
   en.isAfflicted = false;
@@ -278,8 +279,8 @@ const foundChest = async (args, message) => {
     }
   }
 
-  const item1 = new itemDictionary.pelt.itemClass();
-  const item2 = new itemDictionary.copperore.itemClass();
+  const item1 = itemDictionary.createDrop("pelt", 3);
+  const item2 = itemDictionary.createDrop("copperore", 2);
   item1.quantity = 3;
   item2.quantity = 5;
 
@@ -437,8 +438,12 @@ const doPlayersTurn = (combat, player, enemy, crit) => {
   }
 
   if (combat[player].class) {
-    if (combat[player].class.talent.doTalent(combat, player)) {
-      talentmsg = combat[player].class.talent.msg;
+    if (!combat[player].class.talent) {
+      talentmsg = "";
+    } else {
+      if (combat[player].class.talent.doTalent(combat, player)) {
+        talentmsg = combat[player].class.talent.msg;
+      }
     }
   }
 
@@ -457,6 +462,7 @@ const doPlayersTurn = (combat, player, enemy, crit) => {
 const doBigCombat = async (combat, message) => {
   //nedd 3 msg, turn, combat, end
   //forloop for doing the combat
+  console.log("L-464-rpgcombat-combat: ", combat);
   let combatMsg = "",
     turnMsg = "",
     endMsg = "";

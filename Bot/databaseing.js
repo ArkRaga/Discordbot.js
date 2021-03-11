@@ -7,7 +7,7 @@ const baseUrl = "http://localhost:3000/api";
 const getUserFromDatabase = () => {
   //   console.log("L-6 users1", userhandler.users);
   axios
-    .get(baseUrl)
+    .get(baseUrl + "/all")
     .then((users) => {
       let usr = users.data;
       let userArr = [];
@@ -32,26 +32,18 @@ const getUserFromDatabase = () => {
 const getAllUsers = () => {
   //   console.log("L-6 users1", userhandler.users);
   return axios
-    .get(baseUrl)
+    .get(baseUrl + "/all")
     .then((users) => {
       // console.log("L37-databaseing users.data: ", users.data);
       return users.data;
     })
     .catch((err) => {
       console.log("err getting all users Databaseing-L41");
-      // console.log("err: ", err);
+      console.log("err: ", err);
     });
 };
 const getUsersInv = async (id) => {
-  // get the data
-  //loop thur data create items from each ele
-  // create inv and add item to inv
-  // if (inventorys.hasInventory(id)) {
-  //   console.log("no inventory");
-  // } else {
-  //   console.log("has");
-  // }
-  return axios
+  return await axios
     .get(baseUrl + `/inv/user/${id}`)
     .then((items) => {
       return items.data;
@@ -61,9 +53,10 @@ const getUsersInv = async (id) => {
       console.log("There has been an error geting the users inventory");
     });
 };
-const addUserItemToDatabase = (id, item) => {
-  const ele = { item_id: item.id, item_quantity: item.quantity };
-  axios
+const addUserItemToDatabase = async (id, item) => {
+  // return console.log("L57-databeaseing item: ", item);
+  const ele = { player_id: id, item_id: item.id, item_quantity: item.quantity };
+  await axios
     .post(baseUrl + `/inv/add/${id}`, ele)
     .then((body) => {
       console.log("posted: ", ele);
@@ -72,9 +65,15 @@ const addUserItemToDatabase = (id, item) => {
       console.log("there has been an issue adding an item to the database");
     });
 };
-const updateItemInDatabase = (item) => {
-  axios
-    .put(baseUrl + "/inv/item", item)
+
+const updateItemInDatabase = async (id, item) => {
+  const ele = {
+    player_id: id,
+    item_id: item.item_id,
+    item_quantity: item.item_quantity,
+  };
+  await axios
+    .put(baseUrl + "/inv/item", ele)
     .then()
     .catch((err) => console.log("Err updateing item"));
 };
