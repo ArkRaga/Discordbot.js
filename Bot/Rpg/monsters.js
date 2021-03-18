@@ -2,6 +2,7 @@
 /// add mimic - trixiehorror
 const skill = require("./skills");
 const { itemDictionary } = require("./items");
+const database = require("../databaseing");
 
 const AnimalTypes = {
   ANIMAL: 0,
@@ -12,7 +13,7 @@ class Enemy {
   constructor({
     id,
     name = "",
-    type = AnimalTypes.ANIMAL,
+    type = "",
     damage = 1,
     speed = 1,
     def = 1,
@@ -27,11 +28,93 @@ class Enemy {
     this.dmg = damage;
     this.speed = speed;
     this.def = def;
-    this.attacks = [new skill.Basic(), new skill.Heal(), ...attacks];
+    this.attacks = attacks;
     this.drops = drops;
     this.huntItem = huntItem;
   }
 }
+
+const dic = {};
+
+const startUp = async () => {
+  let m;
+  let s;
+  let d;
+  let monsterStack = {};
+  let monsterDropStack = {};
+  await database
+    .getAllMonstersFromDatabase()
+    .then((ele) => {
+      m = ele;
+    })
+    .catch((err) => {
+      console.log("err L-39-Monsters");
+    });
+
+  if (!m) {
+    return;
+  }
+  await database
+    .getAllCharskillsFromDatabase()
+    .then((ele) => {
+      s = ele;
+    })
+    .catch((err) => {
+      console.log("Err L-63-Monsters");
+    });
+
+  await database
+    .getAllDropsFromDatabase()
+    .then((ele) => {
+      d = ele;
+    })
+    .catch((err) => {
+      console.log("err L-79-monsters");
+    });
+
+  s.forEach((ele) => {
+    if (ele.monster_id != null) {
+      if (monsterStack[ele.monster_id]) {
+        monsterStack[ele.monster_id].push(ele.name);
+      } else {
+        monsterStack[ele.monster_id] = [ele.name];
+      }
+    }
+  });
+
+  d.forEach((ele) => {
+    if (monsterDropStack[ele.monster_id]) {
+      monsterDropStack[ele.monster_id].push(
+        itemDictionary.createDrop(
+          ele.name.split(" ").join("").toLowerCase(),
+          ele.item_quantity
+        )
+      );
+    } else {
+      monsterDropStack[ele.monster_id] = [
+        itemDictionary.createDrop(
+          ele.name.split(" ").join("").toLowerCase(),
+          ele.item_quantity
+        ),
+      ];
+    }
+  });
+
+  m.forEach((ele) => {
+    // console.log(monsterStack[ele.monster_id]);
+    dic[ele.name] = new Enemy({
+      id: ele.monster_id,
+      name: ele.name,
+      type: ele.type,
+    });
+    dic[ele.name].attacks = monsterStack[ele.monster_id];
+    dic[ele.name].drops = monsterDropStack[ele.monster_id];
+  });
+
+  console.log("Monsters", dic);
+};
+
+startUp();
 
 class Mimic extends Enemy {
   constructor() {
@@ -50,7 +133,7 @@ class Mimic extends Enemy {
     });
   }
 }
-
+// new skill[ele.name]()
 class Wolf extends Enemy {
   constructor() {
     super({
@@ -118,5 +201,5 @@ const monsters = {
   mimic: Mimic,
 };
 
-module.exports.monsters = monsters;
+module.exports.dic = monsters;
 module.exports.AnimalTypes = AnimalTypes;

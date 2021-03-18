@@ -4,10 +4,42 @@ const { itemDictionary } = require("./Rpg/items");
 const bclass = require("./Rpg/rpgClasses");
 const baseUrl = "http://localhost:3000/api";
 
+const getAllMonstersFromDatabase = () => {
+  return axios
+    .get(baseUrl + "/monsters/all")
+    .then((ele) => {
+      return ele.data;
+    })
+    .catch((err) => {
+      consol.log("ther has been an err geting monsters from db");
+    });
+};
+
+const getAllCharskillsFromDatabase = () => {
+  return axios
+    .get(baseUrl + "/charskills/all")
+    .then((ele) => {
+      return ele.data;
+    })
+    .catch((err) => {
+      console.log("Err getting all charskills");
+    });
+};
+
+const getAllDropsFromDatabase = () => {
+  return axios(baseUrl + "/drops/all")
+    .then((ele) => {
+      return ele.data;
+    })
+    .catch((err) => {
+      console.log("err getting all drops from database");
+    });
+};
+
 const getUserFromDatabase = () => {
   //   console.log("L-6 users1", userhandler.users);
   axios
-    .get(baseUrl + "/all")
+    .get(baseUrl + "/users/all")
     .then((users) => {
       let usr = users.data;
       let userArr = [];
@@ -32,7 +64,7 @@ const getUserFromDatabase = () => {
 const getAllUsers = () => {
   //   console.log("L-6 users1", userhandler.users);
   return axios
-    .get(baseUrl + "/all")
+    .get(baseUrl + "/users/all")
     .then((users) => {
       // console.log("L37-databaseing users.data: ", users.data);
       return users.data;
@@ -65,7 +97,6 @@ const addUserItemToDatabase = async (id, item) => {
       console.log("there has been an issue adding an item to the database");
     });
 };
-
 const updateItemInDatabase = async (id, item) => {
   const ele = {
     player_id: id,
@@ -87,7 +118,7 @@ const getAllInv = () => {
 };
 const getAllItems = () => {
   return axios
-    .get(baseUrl + `/item/all`)
+    .get(baseUrl + `/items/all`)
     .then((items) => {
       return items.data;
     })
@@ -112,5 +143,8 @@ const dic = {
   getAllUsers,
   updateItemInDatabase,
   getAllItems,
+  getAllMonstersFromDatabase,
+  getAllCharskillsFromDatabase,
+  getAllDropsFromDatabase,
 };
 module.exports = dic;

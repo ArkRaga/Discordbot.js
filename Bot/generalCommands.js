@@ -96,16 +96,14 @@ const playchess = async (args, message) => {
 
 const say = async (args, message) => {
   const databaseing = require("./databaseing");
-  const { inventorys } = require("./Rpg/inventory");
-  if (inventorys.hasInventory(message.author.id)) {
-    console.log("has");
-  } else {
-    console.log("doesnt have");
-  }
-
-  databaseing
-    .getUsersInv(message.author.id)
-    .then((ele) => console.log("here is the ele: ", ele));
+  await databaseing
+    .getAllMonstersFromDatabase()
+    .then((ele) => {
+      console.log("Monsters: ", ele);
+    })
+    .catch((err) => {
+      console.log("err L-99-generalcommands");
+    });
   return await message.channel.send("booyaka");
 };
 

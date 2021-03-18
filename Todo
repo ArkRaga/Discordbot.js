@@ -15,10 +15,8 @@ Battle Royal:
         ☐ !checkHp
 
 random:
-    ☐ fix all embeds
     ☐ set up materials
     ☐ fix the craft command
-    ☐ add monsters to the database
 
 
 Pvp Combat:
@@ -30,5 +28,4 @@ rpg Combat:
     ☐ fix monsters overhealing
 
 Dungeons:
-    ☐ add to database
 

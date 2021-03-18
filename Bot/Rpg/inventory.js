@@ -98,11 +98,11 @@ const startUp = async () => {
   await database
     .getAllUsers()
     .then((users) => (u = users))
-    .catch((err) => console.log("err gettins users"));
+    .catch((err) => console.log("err gettins users L-101-invetory"));
   await database
     .getAllInv()
     .then((inv) => (invs = inv))
-    .catch((err) => console.log("err getting invs"));
+    .catch((err) => console.log("err getting invs L-105-inventory"));
 
   // console.log("heres U: ", u);
   // console.log("heres I: ", i);

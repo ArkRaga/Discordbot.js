@@ -50,6 +50,7 @@ const createDrop = (n, num) => {
 };
 
 const itemDictionary = { createDrop };
+
 const StartUp = async () => {
   await database
     .getAllItems()
