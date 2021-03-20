@@ -113,7 +113,11 @@ class Bite extends Skill {
       msg: " bites down and thrashes about befor letting go",
     });
   }
-  doSkill() {}
+  doSkill(combat, p1, p2) {
+    combat[p1].damage = 3;
+    combat[p2].hp -= combat[p1].damage;
+    return combat[p1].name + this.msg + ` for ${combat[p1].damage} damage\n`;
+  }
 }
 
 class Roar extends Skill {
@@ -121,10 +125,14 @@ class Roar extends Skill {
     super({
       name: "Roar",
       status: status.STUN,
-      msg: "Unleashes a loud bone shaking roar",
+      msg: " unleashes a loud roar giving them +1 strength",
     });
   }
-  doSkill() {}
+  doSkill(combat, p1, p2) {
+    combat[p1].damage += 1;
+    combat[p2].hp -= combat[p1].damage;
+    return combat[p1].name + this.msg + ` for ${combat[p1].damage} damage\n`;
+  }
 }
 
 class Swipe extends Skill {

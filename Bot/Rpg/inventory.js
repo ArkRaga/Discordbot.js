@@ -149,11 +149,11 @@ const itemEmbed = (item) => {
     em = Object.create(emn.crafteditemEmbed);
     em.fields[0].value = item.name;
     em.fields[1].value = "Crafted item";
-    let m = "";
-    item.mats.forEach((x) => (m += ` **${x.name}** x${x.quantity}, \n`));
+    let m = "not yet implemented";
+    // item.mats.forEach((x) => (m += ` **${x.name}** x${x.quantity}, \n`));
     em.fields[2].value = m;
     em.fields[2].inline = true;
-    em.fields[3].value = getDropBy(item);
+    em.fields[3].value = "none";
     // em.fields[3].value = "null for now";
     em.fields[3].inline = true;
   }
@@ -171,13 +171,15 @@ const getDropBy = (item) => {
   const { monsters } = require("./monsters");
   let hasMe = "";
   for (i in monsters) {
-    const t = new monsters[i]();
-
-    t.drops.forEach((x) => {
-      if (x.id === item.id) {
-        hasMe += ` ${t.name}\n`;
-      }
-    });
+    const t = monsters[i];
+    // console.log(t);
+    if (monsters[i].drops) {
+      t.drops.forEach((x) => {
+        if (x.id === item.id) {
+          hasMe += ` ${t.name}\n`;
+        }
+      });
+    }
   }
   if (hasMe === "") {
     hasMe = "nothing";
@@ -235,7 +237,7 @@ const addinv = async (args, message) => {
 const item = async (args, message) => {
   switch (args[0]) {
     case "name": {
-      let SelectedItem = itemDictionary[args[1]];
+      let SelectedItem = itemDictionary.createDrop(args[1]);
       await message.channel.send(itemEmbed(SelectedItem));
       break;
     }
@@ -254,6 +256,7 @@ const item = async (args, message) => {
       }
       let SelectedItem = itemDictionary[args[0]];
       if (SelectedItem) {
+        // console.log("L-257-inventory, item: ", SelectedItem);
         await message.channel.send(itemEmbed(SelectedItem));
       } else {
         await message.channel.send("no item found please try again");

@@ -17,7 +17,7 @@ class Enemy {
     damage = 1,
     speed = 1,
     def = 1,
-    attacks = [],
+    attacks = [new skill.Basic(), new skill.Heal()],
     drops = [],
     huntItem = false,
   }) {
@@ -34,55 +34,53 @@ class Enemy {
   }
 }
 
-const dic = {};
-
 const startUp = async () => {
-  let m;
-  let s;
-  let d;
-  let monsterStack = {};
+  let mon;
+  let skills;
+  let drp;
+  let monsterSkillStack = {};
   let monsterDropStack = {};
   await database
     .getAllMonstersFromDatabase()
     .then((ele) => {
-      m = ele;
+      mon = ele;
     })
     .catch((err) => {
-      console.log("err L-39-Monsters");
+      return console.log("err L-39-Monsters");
     });
 
-  if (!m) {
+  if (!mon) {
     return;
   }
   await database
     .getAllCharskillsFromDatabase()
     .then((ele) => {
-      s = ele;
+      skills = ele;
     })
     .catch((err) => {
-      console.log("Err L-63-Monsters");
+      return console.log("Err L-63-Monsters");
     });
 
   await database
     .getAllDropsFromDatabase()
     .then((ele) => {
-      d = ele;
+      drp = ele;
     })
     .catch((err) => {
-      console.log("err L-79-monsters");
+      return console.log("err L-79-monsters");
     });
 
-  s.forEach((ele) => {
+  skills.forEach((ele) => {
     if (ele.monster_id != null) {
-      if (monsterStack[ele.monster_id]) {
-        monsterStack[ele.monster_id].push(ele.name);
+      if (monsterSkillStack[ele.monster_id]) {
+        monsterSkillStack[ele.monster_id].push(new skill[ele.name]());
       } else {
-        monsterStack[ele.monster_id] = [ele.name];
+        monsterSkillStack[ele.monster_id] = [new skill[ele.name]()];
       }
     }
   });
 
-  d.forEach((ele) => {
+  drp.forEach((ele) => {
     if (monsterDropStack[ele.monster_id]) {
       monsterDropStack[ele.monster_id].push(
         itemDictionary.createDrop(
@@ -100,106 +98,128 @@ const startUp = async () => {
     }
   });
 
-  m.forEach((ele) => {
+  mon.forEach((ele) => {
     // console.log(monsterStack[ele.monster_id]);
-    dic[ele.name] = new Enemy({
+    dic[ele.name.toLowerCase()] = new Enemy({
       id: ele.monster_id,
       name: ele.name,
       type: ele.type,
     });
-    dic[ele.name].attacks = monsterStack[ele.monster_id];
-    dic[ele.name].drops = monsterDropStack[ele.monster_id];
+    if (monsterSkillStack[ele.monster_id]) {
+      dic[ele.name.toLowerCase()].attacks = [
+        ...dic[ele.name.toLowerCase()].attacks,
+        ...monsterSkillStack[ele.monster_id],
+      ];
+    }
+    dic[ele.name.toLowerCase()].drops = monsterDropStack[ele.monster_id];
   });
 
-  console.log("Monsters", dic);
+  console.log("Monsters", dic.wolf);
+  console.log("Monsters L-113 Done");
 };
 
+const createMonster = (name) => {
+  let m = dic[name.toLowerCase()];
+  if (!m) {
+    return;
+  }
+  return new Enemy({
+    id: m.id,
+    name: m.name,
+    type: m.type,
+    attacks: m.attacks,
+    drops: m.drops,
+    huntItem: m.huntItem,
+  });
+};
+
+const dic = { createMonster };
 startUp();
 
-class Mimic extends Enemy {
-  constructor() {
-    super({
-      id: 3,
-      name: "Mimic",
-      type: AnimalTypes.MONSTER,
-      damage: 3,
-      speed: 0,
-      def: 0,
-      attacks: [skill.basic],
-      drops: [
-        itemDictionary.createDrop("copperore", 3),
-        itemDictionary.createDrop("obsidian", 1),
-      ],
-    });
-  }
-}
-// new skill[ele.name]()
-class Wolf extends Enemy {
-  constructor() {
-    super({
-      id: 0,
-      name: "Wolf",
-      type: AnimalTypes.ANIMAL,
-      damage: 3,
-      speed: 3,
-      def: 1,
-      attacks: [
-        new skill.Basic(),
-        new skill.Bite(),
-        new skill.Swipe(),
-        new skill.Roar(),
-      ],
-      drops: [
-        itemDictionary.createDrop("pelt", Math.round(Math.random() * 2 + 1)),
-        itemDictionary.createDrop(
-          "sharptooth",
-          Math.round(Math.random() * 2 + 1)
-        ),
-      ],
-      huntItem: itemDictionary.meat,
-    });
-  }
-}
+// class Mimic extends Enemy {
+//   constructor() {
+//     super({
+//       id: 3,
+//       name: "Mimic",
+//       type: AnimalTypes.MONSTER,
+//       damage: 3,
+//       speed: 0,
+//       def: 0,
+//       attacks: [skill.basic],
+//       drops: [
+//         itemDictionary.createDrop("copperore", 3),
+//         itemDictionary.createDrop("obsidian", 1),
+//       ],
+//     });
+//   }
+// }
+// // new skill[ele.name]()
+// class Wolf extends Enemy {
+//   constructor() {
+//     super({
+//       id: 0,
+//       name: "Wolf",
+//       type: AnimalTypes.ANIMAL,
+//       damage: 3,
+//       speed: 3,
+//       def: 1,
+//       attacks: [
+//         new skill.Basic(),
+//         new skill.Bite(),
+//         new skill.Swipe(),
+//         new skill.Roar(),
+//       ],
+//       drops: [
+//         itemDictionary.createDrop("pelt", Math.round(Math.random() * 2 + 1)),
+//         itemDictionary.createDrop(
+//           "sharptooth",
+//           Math.round(Math.random() * 2 + 1)
+//         ),
+//       ],
+//       huntItem: itemDictionary.meat,
+//     });
+//   }
+// }
 
-class Lavagolem extends Enemy {
-  constructor() {
-    super({
-      id: 1,
-      name: "Lava Golem",
-      type: AnimalTypes.MONSTER,
-      damage: 5,
-      speed: 1,
-      def: 3,
-    });
-  }
-}
+// class Lavagolem extends Enemy {
+//   constructor() {
+//     super({
+//       id: 1,
+//       name: "Lava Golem",
+//       type: AnimalTypes.MONSTER,
+//       damage: 5,
+//       speed: 1,
+//       def: 3,
+//     });
+//   }
+// }
 
-class Bear extends Enemy {
-  constructor() {
-    super({
-      id: 2,
-      name: "Bear",
-      type: AnimalTypes.ANIMAL,
-      damage: 4,
-      speed: 2,
-      def: 3,
-      attacks: [new skill.Swipe(), new skill.Roar()],
-      drops: [
-        itemDictionary.createDrop("pelt", Math.round(Math.random() * 4 + 1)),
-      ],
-      huntItem: itemDictionary.honey,
-    });
-  }
-}
+// class Bear extends Enemy {
+//   constructor() {
+//     super({
+//       id: 2,
+//       name: "Bear",
+//       type: AnimalTypes.ANIMAL,
+//       damage: 4,
+//       speed: 2,
+//       def: 3,
+//       attacks: [new skill.Swipe(), new skill.Roar()],
+//       drops: [
+//         itemDictionary.createDrop("pelt", Math.round(Math.random() * 4 + 1)),
+//       ],
+//       huntItem: itemDictionary.honey,
+//     });
+//   }
+// }
 
-const tiger = new Enemy({});
+// const tiger = new Enemy({});
 
-const monsters = {
-  wolf: Wolf,
-  bear: Bear,
-  // lavagolem: Lavagolem,
-  mimic: Mimic,
-};
-
-module.exports.dic = monsters;
+// const monsters = {
+//   createMonster,
+//   wolf: Wolf,
+//   bear: Bear,
+//   // lavagolem: Lavagolem,
+//   mimic: Mimic,
+// };
+module.exports.monsters = dic;
 module.exports.AnimalTypes = AnimalTypes;

@@ -71,7 +71,7 @@ const getAllUsers = () => {
     })
     .catch((err) => {
       console.log("err getting all users Databaseing-L41");
-      console.log("err: ", err);
+      // console.log("err: ", err);
     });
 };
 const getUsersInv = async (id) => {

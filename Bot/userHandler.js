@@ -25,12 +25,14 @@ class userHandler {
         username: author.username,
       };
       axios
-        .post(url + `add/${author.id}`, body)
+        .post(url + `/users/add/${author.id}`, body)
         .then((res) => {
-          console.log("Res: ", res.data);
+          // console.log("Res: ", res.data);
         })
         .catch((err) => {
-          console.log("there has been an issue");
+          console.log(
+            `err L-33-Userhandler there has been an issue adding ${author.username} to database`
+          );
         });
     }
   }
@@ -163,10 +165,11 @@ const addme = (args, message) => {
       console.log("Res: ", res.data);
     })
     .catch((err) => {
-      console.log("there has been an issue");
+      console.log(
+        "L-168-userhandler there has been an issue adding me to the database"
+      );
     });
 };
-
 const printme = async (args, message) => {
   let em = require("./embeds").user2Embed;
   // console.log("printme-id: ", message.author);

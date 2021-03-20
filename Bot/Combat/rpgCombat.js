@@ -146,10 +146,11 @@ const setUpCombat = (message, enemy) => {
     bclass: userhandler.getUser(message.author.id).class,
   });
   // console.log("L148-rpgcombat: ", p);
-  const en = new monsters[enemy]();
-  en.damage = 0;
+  const en = monsters.createMonster(enemy);
+  en.dmg = 3;
   en.isAfflicted = false;
   en.affliction = false;
+  en.maxHp = en.hp;
   const c = new Combat({
     id: ids,
     player: p,
@@ -411,16 +412,24 @@ const doPlayersTurn = (combat, player, enemy, crit) => {
   let statmsg = "";
   let talentmsg = "";
   let dmg = combat[player].damage;
-
+  console.log(
+    "Combat: ",
+    combat.turn,
+    combat[player].name,
+    combat[player].lastAction
+  );
   if (combat[player].isAfflicted) {
     statmsg = combat[player].affliction.doStatus(combat, player);
   }
-  switch (combat.player.lastAction) {
+  switch (combat[player].lastAction) {
     case "attack":
       msg = combat[player].attacks[0].doSkill(combat, player, enemy);
       break;
     case "defend":
-      if (combat[player].hasHealed) {
+      if (
+        combat[player].hasHealed ||
+        combat[player].hp === combat[player].maxHp
+      ) {
         msg = combat[player].attacks[0].doSkill(combat, player, enemy);
         combat[player].lastAction = "attack";
       } else {
@@ -429,7 +438,11 @@ const doPlayersTurn = (combat, player, enemy, crit) => {
       }
       break;
     case "skill":
-      msg = combat[player].attacks[2].doSkill(combat, player, enemy);
+      if (combat[player].attacks.length > 2) {
+        msg = combat[player].attacks[2].doSkill(combat, player, enemy);
+      } else {
+        msg = combat[player].attacks[1].doSkill(combat, player, enemy);
+      }
       break;
     default:
       combat.player.lastAction = "attack";
@@ -462,7 +475,7 @@ const doPlayersTurn = (combat, player, enemy, crit) => {
 const doBigCombat = async (combat, message) => {
   //nedd 3 msg, turn, combat, end
   //forloop for doing the combat
-  console.log("L-464-rpgcombat-combat: ", combat);
+  // console.log("L-464-rpgcombat-combat: ", combat);
   let combatMsg = "",
     turnMsg = "",
     endMsg = "";
@@ -474,7 +487,9 @@ const doBigCombat = async (combat, message) => {
     combat.player.lastAction = playerActions[Math.round(Math.random() * 2 + 0)];
     // let playerAction = playerActions[2];
     combat.enemy.lastAction =
-      Math.round(Math.random() * 100) > 75 ? enemyActions[1] : enemyActions[0];
+      Math.round(Math.random() * 100) > 90 ? enemyActions[1] : enemyActions[0];
+
+    console.log("Actions: ", combat.player.lastAction, combat.enemy.lastAction);
     let playercrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
     let enemycrit = Math.round(Math.random() * 100 + 0) > 90 ? true : false;
     combat.changeTurn();
